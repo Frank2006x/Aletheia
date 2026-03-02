@@ -2,8 +2,8 @@ import { config } from 'dotenv';
 import { resolve } from 'path';
 import type { Config } from 'drizzle-kit';
 
-// Load .env.local file
-config({ path: resolve(__dirname, '.env.local') });
+// Load .env.local file - using process.cwd() for better path resolution
+config({ path: resolve(process.cwd(), '.env.local') });
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not defined in .env.local');

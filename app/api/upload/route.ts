@@ -1,4 +1,3 @@
-import { put } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { db } from "@/core/db";
@@ -49,19 +48,35 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(arrayBuffer);
     const hash = crypto.createHash("sha256").update(buffer).digest("hex");
 
-    // Upload to Vercel Blob
-    const blob = await put(file.name, file, {
-      access: "public",
-      addRandomSuffix: true,
+    // Parse CSV content to structured data
+    const fileContent = buffer.toString("utf-8");
+    const lines = fileContent.trim().split("\n");
+    
+    if (lines.length < 2) {
+      return NextResponse.json<CsvUploadResponse>(
+        { success: false, error: "CSV file must have header and at least one data row" },
+        { status: 400 },
+      );
+    }
+
+    // Parse CSV to JSON
+    const headers = lines[0].split(",").map(h => h.trim());
+    const parsedData = lines.slice(1).map(line => {
+      const values = line.split(",").map(v => v.trim());
+      const row: Record<string, string> = {};
+      headers.forEach((header, index) => {
+        row[header] = values[index] || "";
+      });
+      return row;
     });
 
-    // Store metadata in Neon database
+    // Store parsed CSV data in Neon database
     const [upload] = await db
       .insert(csvUploads)
       .values({
         supplierId,
         investorId,
-        fileUrl: blob.url,
+        parsedData,
         fileName: file.name,
         fileHash: hash,
         fileSize: file.size,
@@ -74,9 +89,9 @@ export async function POST(request: NextRequest) {
       success: true,
       upload: {
         id: upload.id,
-        fileUrl: upload.fileUrl,
         fileName: upload.fileName,
         fileHash: upload.fileHash,
+        fileSize: upload.fileSize,
         uploadedAt: upload.uploadedAt,
       },
       message: "CSV uploaded successfully",

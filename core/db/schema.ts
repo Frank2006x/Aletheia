@@ -34,34 +34,13 @@ export const csvUploads = pgTable("csv_uploads", {
   investorId: uuid("investor_id")
     .references(() => investors.id)
     .notNull(),
-  fileUrl: text("file_url").notNull(),
+  parsedData: jsonb("parsed_data").notNull(), // Structured CSV data as JSON
   fileName: text("file_name").notNull(),
   fileHash: text("file_hash").notNull(), // SHA-256 hash for verification
   fileSize: integer("file_size").notNull(), // Size in bytes
   uploadLocked: boolean("upload_locked").default(true).notNull(), // Permanent lock
   uploadedAt: timestamp("uploaded_at").defaultNow().notNull(),
   anomalyScore: integer("anomaly_score").default(0).notNull(), // 0-100 suspicion score
-});
-
-// Chat threads table - conversational context
-export const chatThreads = pgTable("chat_threads", {
-  id: uuid("id").primaryKey(), // Client-generated UUID
-  csvUploadId: uuid("csv_upload_id")
-    .references(() => csvUploads.id)
-    .notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-// Chat messages table - full conversation history
-export const chatMessages = pgTable("chat_messages", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  threadId: uuid("thread_id")
-    .references(() => chatThreads.id)
-    .notNull(),
-  role: text("role").notNull(), // 'user' | 'assistant'
-  content: text("content").notNull(),
-  chartConfig: jsonb("chart_config"), // Chart.js config if generated
-  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Relations
@@ -73,7 +52,7 @@ export const investorsRelations = relations(investors, ({ many }) => ({
   csvUploads: many(csvUploads),
 }));
 
-export const csvUploadsRelations = relations(csvUploads, ({ one, many }) => ({
+export const csvUploadsRelations = relations(csvUploads, ({ one }) => ({
   supplier: one(suppliers, {
     fields: [csvUploads.supplierId],
     references: [suppliers.id],
@@ -81,21 +60,5 @@ export const csvUploadsRelations = relations(csvUploads, ({ one, many }) => ({
   investor: one(investors, {
     fields: [csvUploads.investorId],
     references: [investors.id],
-  }),
-  chatThreads: many(chatThreads),
-}));
-
-export const chatThreadsRelations = relations(chatThreads, ({ one, many }) => ({
-  csvUpload: one(csvUploads, {
-    fields: [chatThreads.csvUploadId],
-    references: [csvUploads.id],
-  }),
-  messages: many(chatMessages),
-}));
-
-export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
-  thread: one(chatThreads, {
-    fields: [chatMessages.threadId],
-    references: [chatThreads.id],
   }),
 }));

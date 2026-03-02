@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { invokeCsvAgent } from "@/core/agent/pdf-agent";
-import { extractCsvText } from "@/core/tool/csv-loader";
 import { db } from "@/core/db";
-import { chatThreads, chatMessages, csvUploads } from "@/core/db/schema";
+import { csvUploads } from "@/core/db/schema";
 import { eq } from "drizzle-orm";
 import type { AgentResponse, ChatRequest } from "@/types";
 
@@ -12,9 +11,9 @@ export async function POST(request: NextRequest) {
     const { message, pdfUploadId, threadId } = body;
 
     // Validate inputs
-    if (!message || !pdfUploadId || !threadId) {
+    if (!message || !pdfUploadId) {
       return NextResponse.json(
-        { error: "message, pdfUploadId, and threadId are required" },
+        { error: "message and pdfUploadId are required" },
         { status: 400 },
       );
     }
@@ -33,48 +32,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if thread exists, create if not
-    let [thread] = await db
-      .select()
-      .from(chatThreads)
-      .where(eq(chatThreads.id, threadId))
-      .limit(1);
-
-    if (!thread) {
-      [thread] = await db
-        .insert(chatThreads)
-        .values({
-          id: threadId,
-          csvUploadId: upload.id,
-        })
-        .returning();
+    // Format parsed CSV data for agent context
+    const parsedData = upload.parsedData as Array<Record<string, string>>;
+    
+    if (!parsedData || parsedData.length === 0) {
+      return NextResponse.json(
+        { error: "No data found in CSV upload" },
+        { status: 400 },
+      );
     }
 
-    // Save user message to database
-    await db.insert(chatMessages).values({
-      threadId: thread.id,
-      role: "user",
-      content: message,
-    });
-
-    // Extract CSV text for context
-    const csvContext = await extractCsvText(upload.fileUrl);
+    // Convert parsed data to readable format
+    const headers = Object.keys(parsedData[0] || {});
+    const csvContext = [
+      headers.join(","),
+      ...parsedData.map(row => headers.map(h => row[h]).join(","))
+    ].join("\n");
 
     // Invoke the agent
-    const result = await invokeCsvAgent(message, csvContext, threadId);
-
-    // Save AI response to database
-    await db.insert(chatMessages).values({
-      threadId: thread.id,
-      role: "assistant",
-      content: result.response,
-      chartConfig: result.chartConfig || null,
-    });
+    const result = await invokeCsvAgent(message, csvContext, threadId || "default");
 
     const response: AgentResponse = {
       message: result.response,
       chartConfig: result.chartConfig,
-      threadId,
+      threadId: threadId || "default",
     };
 
     return NextResponse.json(response);
@@ -91,3 +72,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+

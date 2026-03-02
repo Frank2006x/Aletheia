@@ -14,7 +14,7 @@ const checkpointer = new MemorySaver();
 export function createCsvAgent() {
   // Initialize Google Gemini model
   const model = new ChatGoogleGenerativeAI({
-    model: "gemini-1.5-flash",
+    model: "gemini-2.5-flash",
     temperature: 0.7,
     apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
   });

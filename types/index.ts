@@ -4,9 +4,9 @@ export interface CsvUploadResponse {
   success: boolean;
   upload?: {
     id: string;
-    fileUrl: string;
     fileName: string;
     fileHash: string;
+    fileSize: number;
     uploadedAt: Date;
   };
   message?: string;
@@ -79,7 +79,7 @@ export interface CsvUpload {
   id: string;
   supplierId: string;
   investorId: string;
-  fileUrl: string;
+  parsedData: Array<Record<string, string>>;
   fileName: string;
   fileHash: string;
   fileSize: number;
