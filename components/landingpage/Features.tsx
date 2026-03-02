@@ -1,4 +1,8 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import { Lock, FileText, Eye, MessageSquare, Database, ShieldAlert } from "lucide-react";
+import { CircuitCanvas } from "@/components/ui/CircuitCanvas";
 
 const features = [
     {
@@ -40,13 +44,58 @@ const features = [
 ];
 
 export default function Features() {
+    const sectionRef = useRef<HTMLElement>(null);
+    const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+    useEffect(() => {
+        let ctx: { revert: () => void } | null = null;
+        const init = async () => {
+            const { default: gsap } = await import("gsap");
+            const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+            gsap.registerPlugin(ScrollTrigger);
+
+            ctx = gsap.context(() => {
+                gsap.from(".features-heading", {
+                    opacity: 0, y: 40,
+                    duration: 0.9, ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: sectionRef.current,
+                        start: "top 75%",
+                        toggleActions: "play none none reverse",
+                    },
+                });
+
+                cardRefs.current.forEach((el, i) => {
+                    if (!el) return;
+                    gsap.fromTo(el,
+                        { opacity: 0, y: 50, scale: 0.96 },
+                        {
+                            opacity: 1, y: 0, scale: 1,
+                            duration: 0.7, ease: "power3.out",
+                            delay: i * 0.08,
+                            scrollTrigger: {
+                                trigger: el,
+                                start: "top 88%",
+                                toggleActions: "play none none reverse",
+                            },
+                        }
+                    );
+                });
+            }, sectionRef);
+        };
+        init();
+        return () => ctx?.revert();
+    }, []);
+
     return (
-        <section id="features" className="relative w-full py-24 lg:py-32 bg-[#050505] overflow-hidden">
-            {/* Background Glows */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+        <section id="features" ref={sectionRef} className="relative w-full py-24 lg:py-32 bg-[#050505] overflow-hidden">
+            <CircuitCanvas />
+            <div className="absolute inset-0 pointer-events-none"
+                style={{ background: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(5,5,5,0.85) 30%, rgba(5,5,5,0.1) 100%)" }}
+            />
 
             <div className="container px-4 md:px-6 mx-auto relative z-10">
-                <div className="mb-16 md:mb-24 flex flex-col items-center text-center">
+                <div className="features-heading mb-16 md:mb-24 flex flex-col items-center text-center">
                     <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-primary mb-6">
                         <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
                         Unbreakable Verification
@@ -63,21 +112,16 @@ export default function Features() {
                     {features.map((feature, index) => (
                         <div
                             key={index}
-                            className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white/[0.03] border border-white/[0.08] p-8 md:p-10 hover:bg-white/[0.05] transition-colors duration-500 ${feature.className}`}
+                            ref={(el) => { cardRefs.current[index] = el; }}
+                            className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white/[0.03] border border-white/[0.08] p-8 md:p-10 hover:bg-white/[0.055] transition-colors duration-500 ${feature.className}`}
                         >
                             <div className="relative z-10">
                                 <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-white/[0.05] border border-white/10 group-hover:scale-110 group-hover:bg-primary/10 transition-all duration-500">
                                     {feature.icon}
                                 </div>
-                                <h3 className="mb-3 text-xl font-semibold text-white/90">
-                                    {feature.title}
-                                </h3>
-                                <p className="text-white/50 leading-relaxed text-sm md:text-base">
-                                    {feature.description}
-                                </p>
+                                <h3 className="mb-3 text-xl font-semibold text-white/90">{feature.title}</h3>
+                                <p className="text-white/50 leading-relaxed text-sm md:text-base">{feature.description}</p>
                             </div>
-
-                            {/* Hover effect gradient */}
                             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                         </div>
                     ))}
