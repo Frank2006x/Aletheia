@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { PlusCircle, Copy, Check, Link2, Clock, FileText, BarChart3, Loader2 } from "lucide-react";
 
 interface LinkItem {
   id: string;
@@ -72,68 +73,38 @@ export default function DashboardPage() {
 
   if (isPending || !session) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#F8F9FA]">
-        <div className="text-gray-500 text-sm">Loading...</div>
+      <div className="h-screen flex items-center justify-center bg-[#050505]">
+        <Loader2 className="w-5 h-5 text-primary animate-spin" />
       </div>
     );
   }
 
+  const stats = [
+    { label: "Total Links", value: links.length, icon: <Link2 className="w-4 h-4 text-white/40" /> },
+    { label: "Pending", value: links.filter((l) => l.status === "pending").length, icon: <Clock className="w-4 h-4 text-amber-400/70" /> },
+    { label: "Reports Received", value: links.filter((l) => l.status === "used").length, icon: <FileText className="w-4 h-4 text-primary/70" /> },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#F8F9FA]">
+    <div className="min-h-screen bg-[#050505]">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b px-6 py-4 flex items-center justify-between">
+      <div className="sticky top-0 z-10 bg-black/70 backdrop-blur-xl border-b border-white/[0.08] px-6 py-4 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1B4332]">
-            Investor Dashboard
-          </h1>
-          <p className="text-sm text-gray-500 mt-0.5">{session.user.email}</p>
+          <div className="flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-primary" />
+            <h1 className="text-xl font-bold text-white tracking-tight">Investor Dashboard</h1>
+          </div>
+          <p className="text-xs text-white/35 mt-0.5 pl-7">{session.user.email}</p>
         </div>
         <button
           onClick={createLink}
           disabled={creating}
-          className="px-5 py-2.5 bg-[#1B4332] text-white text-sm font-medium rounded-lg hover:bg-[#2D5F4C] disabled:opacity-50 transition-colors flex items-center gap-2"
+          className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-black text-sm font-semibold rounded-xl disabled:opacity-40 transition-all"
         >
           {creating ? (
-            <>
-              <svg
-                className="animate-spin h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
-              Creating...
-            </>
+            <><Loader2 className="w-4 h-4 animate-spin" /> Creating...</>
           ) : (
-            <>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-              Create Upload Link
-            </>
+            <><PlusCircle className="w-4 h-4" /> Create Upload Link</>
           )}
         </button>
       </div>
@@ -141,25 +112,23 @@ export default function DashboardPage() {
       <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
         {/* New link banner */}
         {newLink && (
-          <div className="bg-[#E8F4F5] border border-[#028090] rounded-lg p-4">
-            <p className="text-sm font-semibold text-[#1B4332] mb-2">
-              ✅ New upload link created! Send this to your supplier:
-            </p>
+          <div className="bg-primary/[0.06] border border-primary/25 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Check className="w-4 h-4 text-primary" />
+              <p className="text-sm font-semibold text-primary">New upload link created! Send this to your supplier:</p>
+            </div>
             <div className="flex items-center gap-2">
-              <code className="flex-1 bg-white border rounded px-3 py-2 text-sm text-gray-700 break-all">
+              <code className="flex-1 bg-black/50 border border-white/[0.08] rounded-lg px-3 py-2 text-xs text-white/70 font-mono break-all">
                 {newLink}
               </code>
               <button
                 onClick={() => copyToClipboard(newLink)}
-                className="px-4 py-2 bg-[#028090] text-white text-sm rounded-lg hover:bg-[#026070] transition-colors whitespace-nowrap"
+                className="flex items-center gap-1.5 px-3 py-2 bg-primary hover:bg-primary/90 text-black text-xs font-semibold rounded-lg transition-all whitespace-nowrap"
               >
-                {copied ? "Copied!" : "Copy"}
+                {copied ? <><Check className="w-3.5 h-3.5" /> Copied!</> : <><Copy className="w-3.5 h-3.5" /> Copy</>}
               </button>
             </div>
-            <button
-              onClick={() => setNewLink(null)}
-              className="text-xs text-gray-400 hover:text-gray-600 mt-2 underline"
-            >
+            <button onClick={() => setNewLink(null)} className="text-xs text-white/25 hover:text-white/50 mt-2 underline underline-offset-2 transition-colors">
               Dismiss
             </button>
           </div>
@@ -167,109 +136,76 @@ export default function DashboardPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4">
-          {[
-            { label: "Total Links", value: links.length },
-            {
-              label: "Pending",
-              value: links.filter((l) => l.status === "pending").length,
-            },
-            {
-              label: "Reports Received",
-              value: links.filter((l) => l.status === "used").length,
-            },
-          ].map((stat) => (
-            <div
-              key={stat.label}
-              className="bg-white rounded-xl border p-5 text-center shadow-sm"
-            >
-              <p className="text-3xl font-bold text-[#1B4332]">{stat.value}</p>
-              <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
+          {stats.map((stat) => (
+            <div key={stat.label} className="bg-[#0a0a0a] border border-white/[0.08] rounded-xl p-5 flex flex-col items-center gap-1">
+              {stat.icon}
+              <p className="text-3xl font-bold text-white tabular-nums">{stat.value}</p>
+              <p className="text-xs text-white/35 uppercase tracking-wider">{stat.label}</p>
             </div>
           ))}
         </div>
 
         {/* Links table */}
-        <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b">
-            <h2 className="text-base font-semibold text-gray-800">
-              Upload Links
-            </h2>
+        <div className="bg-[#0a0a0a] border border-white/[0.08] rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-white/[0.06] flex items-center gap-2">
+            <Link2 className="w-4 h-4 text-white/40" />
+            <h2 className="text-sm font-semibold text-white/70 uppercase tracking-wider">Upload Links</h2>
           </div>
           {loading ? (
-            <div className="py-16 text-center text-gray-400 text-sm">
+            <div className="py-16 flex flex-col items-center gap-3 text-white/30 text-sm">
+              <Loader2 className="w-5 h-5 animate-spin text-primary/50" />
               Loading links...
             </div>
           ) : links.length === 0 ? (
-            <div className="py-16 text-center text-gray-400 text-sm">
-              No links yet. Click <strong>Create Upload Link</strong> to send
-              one to a supplier.
+            <div className="py-16 text-center space-y-2">
+              <Link2 className="w-8 h-8 text-white/10 mx-auto" />
+              <p className="text-white/30 text-sm">No links yet.</p>
+              <p className="text-white/20 text-xs">Click <span className="text-primary/60 font-medium">Create Upload Link</span> to get started.</p>
             </div>
           ) : (
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="px-6 py-3 text-left font-medium text-gray-600">
-                    Token
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium text-gray-600">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium text-gray-600">
-                    Created
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium text-gray-600">
-                    Report
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium text-gray-600">
-                    Actions
-                  </th>
+              <thead>
+                <tr className="border-b border-white/[0.06]">
+                  {["Token", "Status", "Created", "Report", "Actions"].map((h) => (
+                    <th key={h} className="px-6 py-3 text-left text-xs font-semibold text-white/30 uppercase tracking-wider">{h}</th>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-white/[0.04]">
                 {links.map((link) => (
-                  <tr
-                    key={link.id}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-6 py-4 font-mono text-xs text-gray-600">
+                  <tr key={link.id} className="hover:bg-white/[0.02] transition-colors">
+                    <td className="px-6 py-4 font-mono text-xs text-white/40">
                       {link.token.substring(0, 12)}...
                     </td>
                     <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                          link.status === "used"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-yellow-100 text-yellow-700"
-                        }`}
-                      >
-                        <span
-                          className={`w-1.5 h-1.5 rounded-full ${link.status === "used" ? "bg-green-500" : "bg-yellow-500"}`}
-                        />
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${link.status === "used"
+                          ? "bg-primary/10 text-primary border border-primary/20"
+                          : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                        }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${link.status === "used" ? "bg-primary" : "bg-amber-400"}`} />
                         {link.status === "used" ? "Uploaded" : "Pending"}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-gray-500">
+                    <td className="px-6 py-4 text-white/35 text-xs">
                       {new Date(link.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 text-gray-600">
+                    <td className="px-6 py-4 text-white/50">
                       {link.report ? (
                         <div className="space-y-1">
-                          <p className="font-medium text-gray-800 truncate max-w-45">
-                            {link.report.fileName}
-                          </p>
+                          <p className="font-medium text-white/70 truncate max-w-45 text-xs">{link.report.fileName}</p>
                           {link.report.ipfsCid && (
                             <a
                               href={link.report.ipfsUrl ?? "#"}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-xs text-[#028090] hover:underline font-mono"
+                              className="text-xs text-primary/70 hover:text-primary font-mono underline underline-offset-2 transition-colors"
                             >
                               {link.report.ipfsCid.substring(0, 20)}...
                             </a>
                           )}
                         </div>
                       ) : (
-                        <span className="text-gray-400">—</span>
+                        <span className="text-white/20">—</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -277,17 +213,17 @@ export default function DashboardPage() {
                         {link.status === "pending" && (
                           <button
                             onClick={() => copyToClipboard(link.uploadUrl)}
-                            className="text-xs px-3 py-1.5 rounded-md border border-gray-300 hover:bg-gray-100 transition-colors"
+                            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-white/[0.10] text-white/50 hover:text-white hover:border-white/20 transition-all"
                           >
-                            Copy Link
+                            <Copy className="w-3 h-3" /> Copy Link
                           </button>
                         )}
                         {link.status === "used" && (
                           <button
                             onClick={() => router.push(`/upload/${link.token}`)}
-                            className="text-xs px-3 py-1.5 rounded-md bg-[#1B4332] text-white hover:bg-[#2D5F4C] transition-colors"
+                            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/25 text-primary hover:bg-primary/20 transition-all"
                           >
-                            View Report
+                            <BarChart3 className="w-3 h-3" /> View Report
                           </button>
                         )}
                       </div>

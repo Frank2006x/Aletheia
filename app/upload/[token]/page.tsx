@@ -7,6 +7,14 @@ import { AnalysisDashboard } from "@/components/AnalysisDashboard";
 import { CsvPreview } from "@/components/CsvPreview";
 import ChatInterface from "@/components/ChatInterface";
 import type { AutoAnalysisResult, CsvUploadResponse } from "@/types";
+import {
+  Loader2,
+  AlertCircle,
+  UploadCloud,
+  FileCheck2,
+  X,
+  ChevronLeft,
+} from "lucide-react";
 
 interface LinkData {
   token: string;
@@ -52,22 +60,18 @@ export default function TokenUploadPage({
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   // Post-upload state
-  const [autoAnalysis, setAutoAnalysis] = useState<AutoAnalysisResult | null>(
-    null,
-  );
+  const [autoAnalysis, setAutoAnalysis] = useState<AutoAnalysisResult | null>(null);
   const [csvData, setCsvData] = useState<CsvData | null>(null);
   const [uploadId, setUploadId] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<"analysis" | "csv">("analysis");
   const [threadId] = useState(() => crypto.randomUUID());
 
-  // Redirect to sign in if not authenticated
   useEffect(() => {
     if (!isPending && !session) {
       router.push(`/sign-in?callbackUrl=/upload/${token}`);
     }
   }, [session, isPending, router, token]);
 
-  // Fetch link details once authenticated
   useEffect(() => {
     if (!session) return;
     const fetchLink = async () => {
@@ -82,11 +86,9 @@ export default function TokenUploadPage({
         setLinkData(data.link);
         if (data.report) {
           setReportData(data.report);
-          // Use stored analysis result from DB
           if (data.report.autoAnalysis) {
             setAutoAnalysis(data.report.autoAnalysis as AutoAnalysisResult);
           }
-          // Rebuild csvData from parsedData for CsvPreview
           if (data.report.parsedData?.length > 0) {
             const headers = Object.keys(data.report.parsedData[0]);
             const rows = data.report.parsedData.map(
@@ -111,9 +113,7 @@ export default function TokenUploadPage({
         const text = e.target?.result as string;
         const lines = text.split("\n").filter((l) => l.trim());
         const headers = lines[0].split(",").map((h) => h.trim());
-        const rows = lines
-          .slice(1)
-          .map((l) => l.split(",").map((c) => c.trim()));
+        const rows = lines.slice(1).map((l) => l.split(",").map((c) => c.trim()));
         resolve({ headers, rows, fileName: file.name });
       };
       reader.onerror = reject;
@@ -144,7 +144,6 @@ export default function TokenUploadPage({
       setUploadId(data.upload?.id ?? null);
       if (data.autoAnalysis) setAutoAnalysis(data.autoAnalysis);
 
-      // Refresh link status
       const linkRes = await fetch(`/api/links/${token}`);
       const linkJson = await linkRes.json();
       if (linkJson.success) setLinkData(linkJson.link);
@@ -159,147 +158,116 @@ export default function TokenUploadPage({
   if (isPending || (!session && !isPending)) {
     return <FullPageSpinner message="Checking authentication..." />;
   }
-
   if (linkLoading) {
     return <FullPageSpinner message="Loading upload link..." />;
   }
-
   if (linkError) {
     return <FullPageError message={linkError} />;
   }
 
   const isInvestor = linkData?.investorUserId === session?.user.id;
+  const showReport = (linkData?.status === "used" && reportData) || autoAnalysis;
 
-  // ─── Report view (after upload or already used) ────────────
-  const showReport =
-    (linkData?.status === "used" && reportData) || autoAnalysis;
-
+  // ─── Report view ────────────────────────────────────────────
   if (showReport) {
     const effectiveUploadId = uploadId ?? reportData?.id ?? "";
     return (
-      <div className="h-screen flex flex-col bg-[#F8F9FA]">
+      <div className="h-screen flex flex-col bg-[#050505]">
         {/* Header */}
-        <div className="bg-white shadow-sm border-b px-6 py-3 flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-bold text-[#1B4332]">
-              Sustainability Report
-            </h1>
-            <p className="text-xs text-gray-500">
-              {reportData?.fileName ?? csvData?.fileName ?? "Report"}
-              {(reportData?.ipfsCid ?? null) && (
-                <span className="ml-2">
-                  · IPFS:{" "}
-                  <a
-                    href={reportData?.ipfsUrl ?? "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#028090] font-mono hover:underline"
-                  >
-                    {reportData!.ipfsCid!.substring(0, 20)}...
-                  </a>
-                </span>
+        <div className="relative text-center py-3 px-4 border-b border-white/[0.08] bg-black/60 backdrop-blur-xl flex-shrink-0 z-10">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+          <div className="flex items-center justify-between max-w-screen-xl mx-auto">
+            <div className="text-left">
+              <h1 className="text-base font-bold text-white tracking-tight">Sustainability Report</h1>
+              <p className="text-xs text-white/35 mt-0.5">
+                {reportData?.fileName ?? csvData?.fileName ?? "Report"}
+                {reportData?.ipfsCid && (
+                  <span className="ml-2">
+                    · IPFS:{" "}
+                    <a
+                      href={reportData?.ipfsUrl ?? "#"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary/70 font-mono hover:text-primary transition-colors underline underline-offset-2"
+                    >
+                      {reportData!.ipfsCid!.substring(0, 20)}...
+                    </a>
+                  </span>
+                )}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              {(["analysis", "csv"] as const).map((view) => (
+                <button
+                  key={view}
+                  onClick={() => setActiveView(view)}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${activeView === view
+                      ? "bg-primary text-black"
+                      : "bg-white/[0.05] text-white/50 hover:text-white hover:bg-white/[0.08] border border-white/[0.08]"
+                    }`}
+                >
+                  {view === "analysis" ? "Analysis" : "CSV Data"}
+                </button>
+              ))}
+              {isInvestor && (
+                <button
+                  onClick={() => router.push("/dashboard")}
+                  className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg bg-white/[0.05] text-white/50 hover:text-white hover:bg-white/[0.08] border border-white/[0.08] transition-all"
+                >
+                  <ChevronLeft className="w-3 h-3" /> Dashboard
+                </button>
               )}
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setActiveView("analysis")}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                activeView === "analysis"
-                  ? "bg-[#1B4332] text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              Analysis
-            </button>
-            <button
-              onClick={() => setActiveView("csv")}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                activeView === "csv"
-                  ? "bg-[#1B4332] text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              CSV Data
-            </button>
-            {isInvestor && (
-              <button
-                onClick={() => router.push("/dashboard")}
-                className="px-3 py-1.5 text-sm font-medium rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200"
-              >
-                ← Dashboard
-              </button>
-            )}
+            </div>
           </div>
         </div>
 
         {/* Two-column layout */}
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-[3fr_1fr] overflow-hidden">
-          <div className="h-full overflow-y-auto bg-white border-r">
+          <div className="h-full overflow-y-auto bg-[#050505] border-r border-white/[0.08]" data-lenis-prevent>
             {activeView === "analysis" && autoAnalysis && (
               <AnalysisDashboard analysis={autoAnalysis} />
             )}
             {activeView === "csv" && csvData && (
-              <CsvPreview
-                headers={csvData.headers}
-                rows={csvData.rows}
-                fileName={csvData.fileName}
-              />
+              <CsvPreview headers={csvData.headers} rows={csvData.rows} fileName={csvData.fileName} />
             )}
             {activeView === "analysis" && !autoAnalysis && reportData && (
-              <div className="p-6 text-gray-500 text-sm">
+              <div className="p-8 text-white/30 text-sm text-center mt-16">
                 Analysis data not available. The raw CSV is accessible on IPFS.
               </div>
             )}
           </div>
-          <div className="h-full overflow-hidden bg-white">
-            <ChatInterface
-              pdfUploadId={effectiveUploadId}
-              threadId={threadId}
-            />
+          <div className="h-full overflow-hidden bg-black/30" data-lenis-prevent>
+            <ChatInterface pdfUploadId={effectiveUploadId} threadId={threadId} />
           </div>
         </div>
       </div>
     );
   }
 
-  // ─── Investor viewing their own pending link ───────────────
+  // ─── Investor viewing pending link ─────────────────────────
   if (isInvestor && linkData?.status === "pending") {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#F8F9FA]">
-        <div className="bg-white rounded-2xl border shadow-sm p-8 max-w-md w-full text-center space-y-4">
-          <div className="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center mx-auto">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#ca8a04"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
+      <div className="h-screen flex items-center justify-center bg-[#050505]">
+        <div className="bg-[#0a0a0a] border border-white/[0.08] rounded-2xl p-8 max-w-md w-full text-center space-y-4 mx-4">
+          <div className="w-14 h-14 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
               <line x1="12" y1="8" x2="12" y2="12" />
               <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
           </div>
-          <h2 className="text-lg font-semibold text-gray-800">
-            Waiting for Supplier
-          </h2>
-          <p className="text-sm text-gray-500">
-            This link is pending. Share it with your supplier so they can upload
-            their sustainability CSV.
+          <h2 className="text-lg font-semibold text-white">Waiting for Supplier</h2>
+          <p className="text-sm text-white/40 leading-relaxed">
+            This link is pending. Share it with your supplier so they can upload their sustainability CSV.
           </p>
-          <div className="bg-gray-50 rounded-lg px-4 py-3 text-xs font-mono text-gray-600 break-all">
+          <div className="bg-black/50 border border-white/[0.08] rounded-xl px-4 py-3 text-xs font-mono text-white/40 break-all text-left">
             {`${process.env.NEXT_PUBLIC_APP_URL ?? ""}/upload/${token}`}
           </div>
           <button
             onClick={() => router.push("/dashboard")}
-            className="w-full py-2.5 bg-[#1B4332] text-white text-sm font-medium rounded-lg hover:bg-[#2D5F4C] transition-colors"
+            className="w-full py-2.5 bg-primary hover:bg-primary/90 text-black text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2"
           >
-            Back to Dashboard
+            <ChevronLeft className="w-4 h-4" /> Back to Dashboard
           </button>
         </div>
       </div>
@@ -308,111 +276,88 @@ export default function TokenUploadPage({
 
   // ─── Supplier upload form ──────────────────────────────────
   return (
-    <div className="h-screen flex items-center justify-center bg-[#F8F9FA]">
-      <div className="bg-white rounded-2xl border shadow-sm p-8 max-w-md w-full space-y-6">
+    <div className="h-screen flex items-center justify-center bg-[#050505]">
+      <div className="bg-[#0a0a0a] border border-white/[0.08] rounded-2xl p-8 max-w-md w-full space-y-6 mx-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#1B4332]">
-            Upload Sustainability Report
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            You&apos;ve been invited to upload your CSV sustainability data.
-            This file will be pinned to IPFS for tamper-proof storage.
+          <div className="flex items-center gap-2.5 mb-1">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center">
+              <UploadCloud className="w-4 h-4 text-primary" />
+            </div>
+            <h1 className="text-xl font-bold text-white">Upload Sustainability Report</h1>
+          </div>
+          <p className="text-sm text-white/40 mt-2 leading-relaxed">
+            You&apos;ve been invited to upload your CSV sustainability data. This file will be pinned to IPFS for tamper-proof storage.
           </p>
         </div>
 
         {/* File drop zone */}
-        <div
-          className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
-            file
-              ? "border-[#1B4332] bg-[#E8F4F5]"
-              : "border-gray-300 hover:border-gray-400"
-          }`}
-        >
-          {file ? (
-            <div className="space-y-2">
-              <div className="text-2xl">📄</div>
-              <p className="font-medium text-[#1B4332]">{file.name}</p>
-              <p className="text-xs text-gray-500">
-                {(file.size / 1024).toFixed(1)} KB
-              </p>
-              <button
-                onClick={() => setFile(null)}
-                className="text-xs text-red-500 hover:underline"
-              >
-                Remove
-              </button>
-            </div>
-          ) : (
-            <label className="cursor-pointer block">
-              <input
-                type="file"
-                accept=".csv,text/csv"
-                className="sr-only"
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) {
-                    if (!f.name.endsWith(".csv")) {
-                      setUploadError("Please select a CSV file");
-                      return;
-                    }
-                    setFile(f);
-                    setUploadError(null);
-                  }
-                }}
-              />
-              <div className="space-y-2 text-gray-500">
-                <div className="text-3xl">☁️</div>
-                <p className="font-medium text-sm">
-                  Click to select your CSV file
+        <label className="cursor-pointer block">
+          <input
+            type="file"
+            accept=".csv,text/csv"
+            className="sr-only"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) {
+                if (!f.name.endsWith(".csv")) {
+                  setUploadError("Please select a CSV file");
+                  return;
+                }
+                setFile(f);
+                setUploadError(null);
+              }
+            }}
+          />
+          <div className={`flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition-all duration-200 ${file
+              ? "border-primary/40 bg-primary/[0.04]"
+              : "border-white/[0.10] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+            }`}>
+            {file ? (
+              <>
+                <FileCheck2 className="w-8 h-8 text-primary" />
+                <p className="font-medium text-white text-sm">{file.name}</p>
+                <p className="text-xs text-white/40">{(file.size / 1024).toFixed(1)} KB</p>
+                <button
+                  type="button"
+                  onClick={(e) => { e.preventDefault(); setFile(null); }}
+                  className="flex items-center gap-1 text-xs text-red-400/70 hover:text-red-400 transition-colors"
+                >
+                  <X className="w-3 h-3" /> Remove
+                </button>
+              </>
+            ) : (
+              <>
+                <UploadCloud className="w-8 h-8 text-white/25" />
+                <p className="text-sm text-white/50">
+                  <span className="text-primary font-medium">Click to select</span> your CSV file
                 </p>
-                <p className="text-xs">Max 10MB · .csv only</p>
-              </div>
-            </label>
-          )}
-        </div>
+                <p className="text-xs text-white/25">Max 10MB · .csv only</p>
+              </>
+            )}
+          </div>
+        </label>
 
         {uploadError && (
-          <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
-            {uploadError}
-          </p>
+          <div className="flex items-start gap-2.5 p-3 bg-red-500/[0.08] border border-red-500/20 rounded-xl">
+            <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
+            <p className="text-sm text-red-300">{uploadError}</p>
+          </div>
         )}
 
         <button
           onClick={handleUpload}
           disabled={!file || uploading}
-          className="w-full py-3 bg-[#1B4332] text-white font-medium rounded-xl hover:bg-[#2D5F4C] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3 bg-primary hover:bg-primary/90 text-black font-semibold rounded-xl disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
         >
           {uploading ? (
-            <>
-              <svg
-                className="animate-spin h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
-              Uploading & Analyzing...
-            </>
+            <><Loader2 className="w-4 h-4 animate-spin" /> Uploading & Analyzing...</>
           ) : (
-            "Upload & Analyze"
+            <><UploadCloud className="w-4 h-4" /> Upload & Analyze</>
           )}
         </button>
 
-        <p className="text-xs text-center text-gray-400">
-          Signed in as{" "}
-          <span className="font-medium">{session?.user.email}</span>
+        <p className="text-xs text-center text-white/25">
+          Signed in as <span className="text-white/40 font-medium">{session?.user.email}</span>
         </p>
       </div>
     </div>
@@ -421,38 +366,22 @@ export default function TokenUploadPage({
 
 function FullPageSpinner({ message }: { message: string }) {
   return (
-    <div className="h-screen flex flex-col items-center justify-center gap-3 bg-[#F8F9FA]">
-      <svg
-        className="animate-spin h-6 w-6 text-[#1B4332]"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <circle
-          className="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          strokeWidth="4"
-        />
-        <path
-          className="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-        />
-      </svg>
-      <p className="text-sm text-gray-500">{message}</p>
+    <div className="h-screen flex flex-col items-center justify-center gap-3 bg-[#050505]">
+      <Loader2 className="w-6 h-6 text-primary animate-spin" />
+      <p className="text-sm text-white/35">{message}</p>
     </div>
   );
 }
 
 function FullPageError({ message }: { message: string }) {
   return (
-    <div className="h-screen flex flex-col items-center justify-center gap-3 bg-[#F8F9FA]">
-      <div className="bg-white rounded-2xl border shadow-sm p-8 max-w-sm text-center space-y-3">
-        <div className="text-4xl">❌</div>
-        <h2 className="font-semibold text-gray-800">Link Error</h2>
-        <p className="text-sm text-gray-500">{message}</p>
+    <div className="h-screen flex flex-col items-center justify-center gap-3 bg-[#050505]">
+      <div className="bg-[#0a0a0a] border border-white/[0.08] rounded-2xl p-8 max-w-sm text-center space-y-3">
+        <div className="w-12 h-12 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center mx-auto">
+          <AlertCircle className="w-6 h-6 text-red-400" />
+        </div>
+        <h2 className="font-semibold text-white">Link Error</h2>
+        <p className="text-sm text-white/40">{message}</p>
       </div>
     </div>
   );
