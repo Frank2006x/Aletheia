@@ -1,0 +1,89 @@
+// Type definitions for CSV upload and chat functionality
+
+export interface CsvUploadResponse {
+  success: boolean;
+  upload?: {
+    id: string;
+    fileUrl: string;
+    fileName: string;
+    fileHash: string;
+    uploadedAt: Date;
+  };
+  message?: string;
+  error?: string;
+}
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+  chartConfig?: ChartConfig;
+  timestamp: Date;
+}
+
+export interface ChartConfig {
+  type: "bar" | "line" | "pie" | "doughnut";
+  data: {
+    labels: string[];
+    datasets: {
+      label: string;
+      data: number[];
+      backgroundColor?: string | string[];
+      borderColor?: string | string[];
+      borderWidth?: number;
+    }[];
+  };
+  options?: {
+    responsive?: boolean;
+    plugins?: {
+      legend?: {
+        display?: boolean;
+        position?: "top" | "bottom" | "left" | "right";
+      };
+      title?: {
+        display?: boolean;
+        text?: string;
+      };
+    };
+    scales?: Record<string, unknown>;
+  };
+}
+
+export interface AgentResponse {
+  message: string;
+  chartConfig?: ChartConfig;
+  threadId: string;
+}
+
+export interface ChatRequest {
+  message: string;
+  pdfUploadId: string;
+  threadId: string;
+}
+
+// Database types
+export interface Supplier {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: Date;
+}
+
+export interface Investor {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: Date;
+}
+
+export interface CsvUpload {
+  id: string;
+  supplierId: string;
+  investorId: string;
+  fileUrl: string;
+  fileName: string;
+  fileHash: string;
+  fileSize: number;
+  uploadLocked: boolean;
+  uploadedAt: Date;
+  anomalyScore: number;
+}
