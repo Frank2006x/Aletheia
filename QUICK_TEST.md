@@ -10,6 +10,7 @@ Investor ID: 71fb7399-6015-4857-990e-8d46d548ba41
 ## Test Steps:
 
 1. **Start the server**:
+
    ```bash
    pnpm dev
    ```
@@ -28,9 +29,11 @@ Investor ID: 71fb7399-6015-4857-990e-8d46d548ba41
    - "What environmental goals are mentioned?"
 
 5. **Verify Database**:
+
    ```bash
    pnpm db:studio
    ```
+
    - Check `pdf_uploads` table for your upload
    - Check `chat_threads` table for conversation
    - Check `chat_messages` table for message history

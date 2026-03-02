@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     // Format parsed CSV data for agent context
     const parsedData = upload.parsedData as Array<Record<string, string>>;
-    
+
     if (!parsedData || parsedData.length === 0) {
       return NextResponse.json(
         { error: "No data found in CSV upload" },
@@ -46,11 +46,15 @@ export async function POST(request: NextRequest) {
     const headers = Object.keys(parsedData[0] || {});
     const csvContext = [
       headers.join(","),
-      ...parsedData.map(row => headers.map(h => row[h]).join(","))
+      ...parsedData.map((row) => headers.map((h) => row[h]).join(",")),
     ].join("\n");
 
     // Invoke the agent
-    const result = await invokeCsvAgent(message, csvContext, threadId || "default");
+    const result = await invokeCsvAgent(
+      message,
+      csvContext,
+      threadId || "default",
+    );
 
     const response: AgentResponse = {
       message: result.response,
@@ -72,4 +76,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

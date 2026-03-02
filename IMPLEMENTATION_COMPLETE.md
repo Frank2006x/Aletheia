@@ -5,6 +5,7 @@ Successfully implemented Neon PostgreSQL + Drizzle ORM + LangGraph Agent system.
 ## ✅ What Was Implemented
 
 ### 1. Database Layer (Neon + Drizzle)
+
 - ✅ Database schema with 5 tables (suppliers, investors, pdf_uploads, chat_threads, chat_messages)
 - ✅ Drizzle ORM configuration
 - ✅ Database connection setup
@@ -12,22 +13,26 @@ Successfully implemented Neon PostgreSQL + Drizzle ORM + LangGraph Agent system.
 - ✅ Seed script with demo data
 
 ### 2. API Routes
+
 - ✅ `/api/upload` - Upload PDF with supplier/investor IDs, store in Vercel Blob + Neon
 - ✅ `/api/chat` - Chat with AI agent, store messages in database
 
 ### 3. Components
+
 - ✅ `UploadForm` - Upload PDF with supplier/investor ID inputs
 - ✅ `ChatInterface` - Conversational UI with message persistence using `pdfUploadId`
 - ✅ `ChartRenderer` - Display Chart.js visualizations
 - ✅ Upload page - Complete workflow
 
 ### 4. LangGraph Agent
+
 - ✅ Google Gemini integration
 - ✅ PDF parsing with LangChain PDFLoader
 - ✅ Chart generation tool
 - ✅ MemorySaver for conversation context
 
 ### 5. Type Safety
+
 - ✅ Updated TypeScript types for database entities
 - ✅ Request/response interfaces
 
@@ -46,6 +51,7 @@ chat_messages (id, thread_id, role, content, chart_config, created_at)
 ### Step 1: Setup Environment
 
 Add to `.env.local`:
+
 ```env
 GOOGLE_GENERATIVE_AI_API_KEY=your_key
 BLOB_READ_WRITE_TOKEN=your_token
@@ -112,29 +118,34 @@ types/index.ts             # TypeScript types
 ## 🔑 Key Features
 
 ### 1. One-Time Upload Lock
+
 PDFs are permanently locked after upload (`upload_locked = true`).
 
 ### 2. SHA-256 Verification
+
 File integrity verified with cryptographic hash stored in `file_hash`.
 
 ### 3. Conversation Persistence
+
 All chat messages stored in `chat_messages` table with JSON chart configs.
 
 ### 4. Relationship Tracking
+
 Database enforces supplier-investor-PDF relationships via foreign keys.
 
 ### 5. Anomaly Scoring
+
 `anomaly_score` field (0-100) ready for future malpractice detection.
 
 ## 📊 Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start Next.js dev server |
-| `pnpm db:push` | Push schema to Neon database |
-| `pnpm db:studio` | Open Drizzle Studio (visual DB browser) |
-| `pnpm db:seed` | Seed demo supplier + investor |
-| `pnpm db:generate` | Generate migration files |
+| Command            | Description                             |
+| ------------------ | --------------------------------------- |
+| `pnpm dev`         | Start Next.js dev server                |
+| `pnpm db:push`     | Push schema to Neon database            |
+| `pnpm db:studio`   | Open Drizzle Studio (visual DB browser) |
+| `pnpm db:seed`     | Seed demo supplier + investor           |
+| `pnpm db:generate` | Generate migration files                |
 
 ## 🔄 Data Flow
 
@@ -164,12 +175,14 @@ Database enforces supplier-investor-PDF relationships via foreign keys.
 ## 🌟 What's Different from Before
 
 ### Before (Vercel Blob only):
+
 - No metadata storage
 - No relationship tracking
 - No message persistence
 - pdfUrl passed around manually
 
 ### After (Neon + Drizzle):
+
 - ✅ Full metadata in database
 - ✅ Supplier-Investor-PDF relationships
 - ✅ Complete chat history stored
@@ -190,16 +203,20 @@ Database enforces supplier-investor-PDF relationships via foreign keys.
 ## 🐛 Troubleshooting
 
 ### "DATABASE_URL is not set"
+
 - Ensure `.env.local` exists with valid Neon connection string
 
 ### "Supplier/Investor not found"
+
 - Run `pnpm db:seed` to create demo accounts
 - Copy the UUIDs from output
 
 ### Schema changes not reflecting
+
 - Run `pnpm db:push` to force sync
 
 ### Chat agent not responding
+
 - Check `GOOGLE_GENERATIVE_AI_API_KEY` in `.env.local`
 - Verify API key has quota remaining
 
@@ -208,6 +225,7 @@ Database enforces supplier-investor-PDF relationships via foreign keys.
 ## 🎉 Success!
 
 You now have a complete **Neon + Drizzle + LangGraph** implementation with:
+
 - Serverless PostgreSQL database
 - Type-safe ORM queries
 - AI-powered PDF analysis

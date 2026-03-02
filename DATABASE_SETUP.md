@@ -36,6 +36,7 @@ pnpm db:push
 ```
 
 This command:
+
 - Reads `core/db/schema.ts`
 - Creates all tables in your Neon database
 - No migration files generated (uses Drizzle's push mode)
@@ -47,6 +48,7 @@ pnpm db:seed
 ```
 
 This creates:
+
 - 1 demo supplier
 - 1 demo investor
 
@@ -55,6 +57,7 @@ This creates:
 ## 📊 Database Schema
 
 ### `suppliers` table
+
 ```sql
 id          UUID PRIMARY KEY (auto-generated)
 name        TEXT NOT NULL
@@ -63,6 +66,7 @@ created_at  TIMESTAMP DEFAULT NOW()
 ```
 
 ### `investors` table
+
 ```sql
 id          UUID PRIMARY KEY (auto-generated)
 name        TEXT NOT NULL
@@ -71,6 +75,7 @@ created_at  TIMESTAMP DEFAULT NOW()
 ```
 
 ### `pdf_uploads` table
+
 ```sql
 id             UUID PRIMARY KEY (auto-generated)
 supplier_id    UUID → suppliers(id)
@@ -85,6 +90,7 @@ anomaly_score  INTEGER DEFAULT 0 (0-100 suspicion score)
 ```
 
 ### `chat_threads` table
+
 ```sql
 id             UUID PRIMARY KEY (client-provided)
 pdf_upload_id  UUID → pdf_uploads(id)
@@ -92,6 +98,7 @@ created_at     TIMESTAMP DEFAULT NOW()
 ```
 
 ### `chat_messages` table
+
 ```sql
 id             UUID PRIMARY KEY (auto-generated)
 thread_id      UUID → chat_threads(id)
@@ -104,15 +111,19 @@ created_at     TIMESTAMP DEFAULT NOW()
 ## 🛠 Available Scripts
 
 ### `pnpm db:push`
+
 Push schema changes to Neon database (no migrations)
 
 ### `pnpm db:generate`
+
 Generate migration files from schema (if using migrations mode)
 
 ### `pnpm db:studio`
+
 Open Drizzle Studio - visual database browser at `https://local.drizzle.studio`
 
 ### `pnpm db:seed`
+
 Run seed script to populate demo data
 
 ## 📝 Usage in Code
@@ -120,27 +131,30 @@ Run seed script to populate demo data
 ### Import Database Client
 
 ```typescript
-import { db } from '@/core/db';
-import { pdfUploads, suppliers, investors } from '@/core/db/schema';
+import { db } from "@/core/db";
+import { pdfUploads, suppliers, investors } from "@/core/db/schema";
 ```
 
 ### Insert Data
 
 ```typescript
-const [upload] = await db.insert(pdfUploads).values({
-  supplierId: '...',
-  investorId: '...',
-  fileUrl: 'https://...',
-  fileName: 'report.pdf',
-  fileHash: 'sha256...',
-  fileSize: 1024000,
-}).returning();
+const [upload] = await db
+  .insert(pdfUploads)
+  .values({
+    supplierId: "...",
+    investorId: "...",
+    fileUrl: "https://...",
+    fileName: "report.pdf",
+    fileHash: "sha256...",
+    fileSize: 1024000,
+  })
+  .returning();
 ```
 
 ### Query Data
 
 ```typescript
-import { eq } from 'drizzle-orm';
+import { eq } from "drizzle-orm";
 
 const uploads = await db
   .select()

@@ -8,6 +8,8 @@ export interface CsvUploadResponse {
     fileHash: string;
     fileSize: number;
     uploadedAt: Date;
+    ipfsCid?: string;
+    ipfsUrl?: string;
   };
   autoAnalysis?: AutoAnalysisResult;
   message?: string;

@@ -24,14 +24,12 @@ async function seed() {
     const [investor] = await db
       .insert(investors)
       .values({
-        name: "ESG Capital Partners",
         email: "invest@esgcapital.example",
       })
       .returning();
 
     console.log("✅ Investor created:", {
       id: investor.id,
-      name: investor.name,
       email: investor.email,
     });
 

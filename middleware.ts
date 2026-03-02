@@ -8,6 +8,11 @@ const authRoutes = ["/sign-in"];
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Always allow all API routes (they handle auth themselves)
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.next();
+  }
+
   // Always allow Better Auth API routes
   if (pathname.startsWith(authApiPrefix)) {
     return NextResponse.next();
@@ -25,7 +30,8 @@ export async function middleware(request: NextRequest) {
   }
 
   // If unauthenticated and NOT on a public/auth route → redirect to /sign-in
-  const isPublic = publicRoutes.includes(pathname) || authRoutes.includes(pathname);
+  const isPublic =
+    publicRoutes.includes(pathname) || authRoutes.includes(pathname);
   if (!isAuthenticated && !isPublic) {
     const signInUrl = new URL("/sign-in", request.url);
     signInUrl.searchParams.set("callbackUrl", pathname);

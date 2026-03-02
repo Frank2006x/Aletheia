@@ -112,7 +112,9 @@ export default function ChatInterface({
               }`}
             >
               <div
-                className={`max-w-[80%] rounded-lg p-4 ${
+                className={`rounded-lg p-4 ${
+                  message.chartConfig ? "w-full" : "max-w-[80%]"
+                } ${
                   message.role === "user"
                     ? "bg-[#028090] text-white"
                     : "bg-gray-100 text-gray-900"

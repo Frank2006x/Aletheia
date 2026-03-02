@@ -33,17 +33,26 @@ interface ChartRendererProps {
 }
 
 export default function ChartRenderer({ config }: ChartRendererProps) {
-  const commonProps = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const chartOptions: any = {
+    ...config.options,
+    responsive: true,
+    maintainAspectRatio: false,
+  };
+
+  const chartProps = {
     data: config.data,
-    options: config.options || {},
+    options: chartOptions,
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-md">
-      {config.type === "bar" && <Bar {...commonProps} />}
-      {config.type === "line" && <Line {...commonProps} />}
-      {config.type === "pie" && <Pie {...commonProps} />}
-      {config.type === "doughnut" && <Doughnut {...commonProps} />}
+    <div className="w-full">
+      <div className="relative w-full" style={{ height: "220px" }}>
+        {config.type === "bar" && <Bar {...chartProps} />}
+        {config.type === "line" && <Line {...chartProps} />}
+        {config.type === "pie" && <Pie {...chartProps} />}
+        {config.type === "doughnut" && <Doughnut {...chartProps} />}
+      </div>
     </div>
   );
 }

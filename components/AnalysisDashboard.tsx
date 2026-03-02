@@ -19,7 +19,7 @@ export function AnalysisDashboard({ analysis }: AnalysisDashboardProps) {
           key={`chart-${index}`}
           className="p-4 bg-white shadow-md flex flex-col"
         >
-          <div className="flex-1">
+        <div style={{ height: "220px" }}>
             <ChartRenderer config={chartWithInsight.chartConfig} />
           </div>
           {chartWithInsight.insight && (
