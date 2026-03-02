@@ -35,7 +35,7 @@ const steps = [
 
 export default function HowItWorks() {
     return (
-        <section className="relative w-full py-24 lg:py-32 bg-[#000000] overflow-hidden">
+        <section id="how-it-works" className="relative w-full py-24 lg:py-32 bg-[#000000] overflow-hidden">
             <div className="container px-4 md:px-6 mx-auto relative z-10 max-w-5xl">
                 <div className="mb-16 md:mb-24 flex flex-col items-center text-center">
                     <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6">
