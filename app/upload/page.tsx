@@ -13,7 +13,6 @@ export default function UploadPage() {
     autoAnalysis,
     setPdfUploadId,
     setAutoAnalysis,
-    reset,
   } = useUploadStore();
 
   const handleUploadSuccess = (
@@ -45,19 +44,6 @@ export default function UploadPage() {
           </div>
         ) : (
           <div className="flex-1 flex flex-col ">
-            <div className="text-center py-3 px-4 bg-white border-b">
-              <p className="text-xs text-gray-600">
-                CSV uploaded successfully. Thread ID: {threadId.substring(0, 8)}
-                ...
-              </p>
-              <button
-                onClick={reset}
-                className="text-[#028090] hover:underline text-xs mt-1"
-              >
-                Upload a different CSV
-              </button>
-            </div>
-
             {/* Two-column layout: Analysis dashboard on left (75%), Chat on right (25%) */}
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-0 overflow-hidden">
               {/* Left side: Analysis Dashboard */}
