@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSession, signOut } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   Card,
@@ -25,17 +25,45 @@ import {
   UserRound,
   Chrome,
   Loader2,
+  TrendingUp,
+  Truck,
+  BarChart3,
 } from "lucide-react";
+
+type Role = "investor" | "supplier" | null;
 
 export default function ProfilePage() {
   const { data: session, isPending } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [role, setRole] = useState<Role>(null);
+  const [roleLoading, setRoleLoading] = useState(true);
 
-  // Redirect unauthenticated users — must be in useEffect, never during render
+  // Register role from ?role= param then fetch confirmed role from DB
   useEffect(() => {
-    if (!isPending && !session) {
-      router.push("/sign-in");
-    }
+    if (!session) return;
+    const setup = async () => {
+      setRoleLoading(true);
+      const paramRole = searchParams.get("role") as "investor" | "supplier" | null;
+      if (paramRole === "investor" || paramRole === "supplier") {
+        await fetch("/api/role", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role: paramRole }),
+        });
+        router.replace("/profile", { scroll: false });
+      }
+      const res = await fetch("/api/role");
+      const data = await res.json();
+      setRole(data.role ?? null);
+      setRoleLoading(false);
+    };
+    setup();
+  }, [session, searchParams, router]);
+
+  // Redirect unauthenticated users
+  useEffect(() => {
+    if (!isPending && !session) router.push("/sign-in");
   }, [isPending, session, router]);
 
   const handleSignOut = async () => {
@@ -62,11 +90,11 @@ export default function ProfilePage() {
 
   const initials = user.name
     ? user.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2)
     : "?";
 
   const joinedDate = new Date(user.createdAt).toLocaleDateString("en-US", {
@@ -76,10 +104,10 @@ export default function ProfilePage() {
   });
 
   const infoRows = [
-    { icon: UserRound,    label: "Full Name",      value: user.name ?? "—" },
-    { icon: Mail,         label: "Email",          value: user.email },
-    { icon: CalendarDays, label: "Member Since",   value: joinedDate },
-    { icon: Chrome,       label: "Auth Provider",  value: "Google OAuth" },
+    { icon: UserRound, label: "Full Name", value: user.name ?? "—" },
+    { icon: Mail, label: "Email", value: user.email },
+    { icon: CalendarDays, label: "Member Since", value: joinedDate },
+    { icon: Chrome, label: "Auth Provider", value: "Google OAuth" },
   ];
 
   /* ── Page ─────────────────────────────────────────────────────── */
@@ -186,6 +214,37 @@ export default function ProfilePage() {
                   )}
                 </div>
                 <p className="text-sm text-white/40 mt-0.5">Aletheia Member</p>
+              </div>
+
+              {/* Role badge */}
+              <div className="px-6 pb-5">
+                <p className="text-[11px] text-white/30 uppercase tracking-wider mb-2">Registered Role</p>
+                {roleLoading ? (
+                  <div className="flex items-center gap-2 text-white/30 text-sm">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Verifying…
+                  </div>
+                ) : role ? (
+                  <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-sm font-semibold ${role === "investor"
+                      ? "bg-primary/10 border-primary/30 text-primary"
+                      : "bg-indigo-500/10 border-indigo-500/30 text-indigo-400"
+                    }`}>
+                    {role === "investor" ? <TrendingUp className="w-4 h-4" /> : <Truck className="w-4 h-4" />}
+                    {role === "investor" ? "Investor" : "Supplier"}
+                  </div>
+                ) : (
+                  <span className="text-white/25 text-xs">No role set — sign in again to register.</span>
+                )}
+              </div>
+
+              {/* Dashboard button */}
+              <div className="px-6 pb-6">
+                <Button
+                  className="w-full bg-primary hover:bg-primary/90 text-black font-semibold gap-2"
+                  onClick={() => router.push("/dashboard")}
+                >
+                  <BarChart3 className="w-4 h-4" />
+                  {role === "supplier" ? "View Reports Dashboard" : "Go to Dashboard"}
+                </Button>
               </div>
             </CardHeader>
           </Card>

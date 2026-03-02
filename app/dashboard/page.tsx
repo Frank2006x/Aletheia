@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { PlusCircle, Copy, Check, Link2, Clock, FileText, BarChart3, Loader2 } from "lucide-react";
+import { PlusCircle, Copy, Check, Link2, Clock, FileText, BarChart3, Loader2, ChevronLeft } from "lucide-react";
 
 interface LinkItem {
   id: string;
@@ -29,6 +29,7 @@ export default function DashboardPage() {
   const [creating, setCreating] = useState(false);
   const [newLink, setNewLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [role, setRole] = useState<"investor" | "supplier" | null>(null);
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -37,7 +38,10 @@ export default function DashboardPage() {
   }, [session, isPending, router]);
 
   useEffect(() => {
-    if (session) fetchLinks();
+    if (session) {
+      fetchLinks();
+      fetch("/api/role").then((r) => r.json()).then((d) => setRole(d.role ?? null));
+    }
   }, [session]);
 
   const fetchLinks = async () => {
@@ -92,23 +96,36 @@ export default function DashboardPage() {
         <div>
           <div className="flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-primary" />
-            <h1 className="text-xl font-bold text-white tracking-tight">Investor Dashboard</h1>
+            <h1 className="text-xl font-bold text-white tracking-tight">
+              {role === "supplier" ? "Supplier" : "Investor"} Dashboard
+            </h1>
           </div>
           <p className="text-xs text-white/35 mt-0.5 pl-7">{session.user.email}</p>
         </div>
-        <button
-          onClick={createLink}
-          disabled={creating}
-          className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-black text-sm font-semibold rounded-xl disabled:opacity-40 transition-all"
-        >
-          {creating ? (
-            <><Loader2 className="w-4 h-4 animate-spin" /> Creating...</>
-          ) : (
-            <><PlusCircle className="w-4 h-4" /> Create Upload Link</>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => router.push("/profile")}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl bg-white/[0.04] border border-white/[0.08] text-white/40 hover:text-white hover:bg-white/[0.08] transition-all"
+          >
+            <ChevronLeft className="w-3.5 h-3.5" /> Profile
+          </button>
+          {role === "investor" && (
+            <button
+              onClick={createLink}
+              disabled={creating}
+              className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-black text-sm font-semibold rounded-xl disabled:opacity-40 transition-all"
+            >
+              {creating ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> Creating...</>
+              ) : (
+                <><PlusCircle className="w-4 h-4" /> Create Upload Link</>
+              )}
+            </button>
           )}
-        </button>
+        </div>
       </div>
 
+      {/* Page content */}
       <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
         {/* New link banner */}
         {newLink && (
@@ -160,7 +177,9 @@ export default function DashboardPage() {
             <div className="py-16 text-center space-y-2">
               <Link2 className="w-8 h-8 text-white/10 mx-auto" />
               <p className="text-white/30 text-sm">No links yet.</p>
-              <p className="text-white/20 text-xs">Click <span className="text-primary/60 font-medium">Create Upload Link</span> to get started.</p>
+              <p className="text-white/20 text-xs">
+                Click <span className="text-primary/60 font-medium">Create Upload Link</span> to get started.
+              </p>
             </div>
           ) : (
             <table className="w-full text-sm">

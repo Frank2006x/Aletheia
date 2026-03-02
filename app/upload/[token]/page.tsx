@@ -202,21 +202,19 @@ export default function TokenUploadPage({
                   key={view}
                   onClick={() => setActiveView(view)}
                   className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${activeView === view
-                      ? "bg-primary text-black"
-                      : "bg-white/[0.05] text-white/50 hover:text-white hover:bg-white/[0.08] border border-white/[0.08]"
+                    ? "bg-primary text-black"
+                    : "bg-white/[0.05] text-white/50 hover:text-white hover:bg-white/[0.08] border border-white/[0.08]"
                     }`}
                 >
                   {view === "analysis" ? "Analysis" : "CSV Data"}
                 </button>
               ))}
-              {isInvestor && (
-                <button
-                  onClick={() => router.push("/dashboard")}
-                  className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg bg-white/[0.05] text-white/50 hover:text-white hover:bg-white/[0.08] border border-white/[0.08] transition-all"
-                >
-                  <ChevronLeft className="w-3 h-3" /> Dashboard
-                </button>
-              )}
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg bg-white/[0.05] text-white/50 hover:text-white hover:bg-white/[0.08] border border-white/[0.08] transition-all"
+              >
+                <ChevronLeft className="w-3 h-3" /> Dashboard
+              </button>
             </div>
           </div>
         </div>
@@ -309,8 +307,8 @@ export default function TokenUploadPage({
             }}
           />
           <div className={`flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition-all duration-200 ${file
-              ? "border-primary/40 bg-primary/[0.04]"
-              : "border-white/[0.10] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+            ? "border-primary/40 bg-primary/[0.04]"
+            : "border-white/[0.10] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
             }`}>
             {file ? (
               <>

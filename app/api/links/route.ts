@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET /api/links — investor fetches all their links with report info
+// GET /api/links — returns links for the current user (investor or supplier)
 export async function GET(request: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -53,11 +53,29 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const links = await db
+    // Determine role by checking investors/suppliers tables
+    const { investors, suppliers } = await import("@/core/db/schema");
+    const email = session.user.email;
+
+    const [investorRow] = await db
       .select()
-      .from(uploadLinks)
-      .where(eq(uploadLinks.investorUserId, session.user.id))
-      .orderBy(uploadLinks.createdAt);
+      .from(investors)
+      .where(eq(investors.email, email));
+
+    const isInvestor = !!investorRow;
+
+    // Fetch links based on role
+    const links = isInvestor
+      ? await db
+        .select()
+        .from(uploadLinks)
+        .where(eq(uploadLinks.investorUserId, session.user.id))
+        .orderBy(uploadLinks.createdAt)
+      : await db
+        .select()
+        .from(uploadLinks)
+        .where(eq(uploadLinks.supplierUserId, session.user.id))
+        .orderBy(uploadLinks.createdAt);
 
     // For used links, fetch report summary
     const enriched = await Promise.all(
