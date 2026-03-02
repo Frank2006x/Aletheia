@@ -1,13 +1,18 @@
 "use client";
 
-import HeroScroll from "@/components/HeroScroll";
-import Footer from "@/components/Footer";
+import HeroScroll from "@/components/landingpage/HeroScroll";
+import Features from "@/components/landingpage/Features";
+import HowItWorks from "@/components/landingpage/HowItWorks";
+import Footer from "@/components/landingpage/Footer";
 
 export default function Home() {
   return (
-    <main className="bg-background">
+    <main className="bg-[#050505]">
       <HeroScroll />
-      <section style={{ width: "100vw", height: "100vh", overflow: "hidden", position: "relative" }}>
+      <Features />
+      <HowItWorks />
+
+      <section className="relative w-full h-screen overflow-hidden flex flex-col justify-end bg-black">
         {/* Background video */}
         <video
           src="/ball.mp4"
@@ -15,64 +20,42 @@ export default function Home() {
           loop
           muted
           playsInline
-          style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
+          className="absolute inset-0 w-full h-full object-cover opacity-80"
         />
 
+        {/* Overlay gradient for readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent" />
+
         {/* Overlay content */}
-        <div style={{
-          position: "absolute", inset: 0,
-          display: "flex", flexDirection: "column",
-          justifyContent: "flex-end",
-          padding: "48px",
-          gap: "32px",
-        }}>
+        <div className="relative z-10 w-full px-6 md:px-12 lg:px-24 pb-16 md:pb-24 pt-32 flex flex-col xl:flex-row gap-12 xl:gap-24 xl:items-end max-w-[1400px] mx-auto">
           {/* Headline */}
-          <h2 style={{
-            fontSize: "clamp(2rem, 5vw, 3.5rem)",
-            fontWeight: 700,
-            color: "#fff",
-            lineHeight: 1.15,
-            maxWidth: "420px",
-            margin: 0,
-          }}>
-            Why It Works<br />for Everyone
-          </h2>
+          <div className="flex-shrink-0">
+            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 tracking-tight leading-[1.1]">
+              Value Created<br />for Everyone
+            </h2>
+          </div>
 
           {/* Cards row */}
-          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-            {/* Card 1 */}
-            <div style={{
-              flex: "1 1 260px",
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              backdropFilter: "blur(16px)",
-              WebkitBackdropFilter: "blur(16px)",
-              borderRadius: "16px",
-              padding: "28px 28px 32px",
-            }}>
-              <p style={{ color: "var(--primary)", fontWeight: 600, fontSize: "1.05rem", marginBottom: "14px" }}>
-                New to Crypto
-              </p>
-              <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.85rem", lineHeight: 1.7, margin: 0 }}>
-                Avoid beginner mistakes with real-time, understandable advice. Get plain-English breakdowns of complex DeFi interactions. Learn while transacting—no steep learning curve.
+          <div className="flex flex-col md:flex-row gap-6 w-full max-w-4xl">
+            {/* Supplier Card */}
+            <div className="flex-1 bg-white/[0.03] border border-white/10 backdrop-blur-xl rounded-3xl p-8 hover:bg-white/[0.06] transition-all duration-500">
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-sm font-semibold mb-6 border border-emerald-500/20">
+                For Suppliers
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">Effortless Compliance</h3>
+              <p className="text-white/60 leading-relaxed text-[15px]">
+                No technical integration or manual data entry. Upload your existing ESG report or statements once, and our AI does the rest. Gain instant access to the same analytics the investors see, and use conversational AI to understand how your metrics compare to industry benchmarks.
               </p>
             </div>
 
-            {/* Card 2 */}
-            <div style={{
-              flex: "1 1 260px",
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              backdropFilter: "blur(16px)",
-              WebkitBackdropFilter: "blur(16px)",
-              borderRadius: "16px",
-              padding: "28px 28px 32px",
-            }}>
-              <p style={{ color: "var(--primary)", fontWeight: 600, fontSize: "1.05rem", marginBottom: "14px" }}>
-                DeFi Power User
-              </p>
-              <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.85rem", lineHeight: 1.7, margin: 0 }}>
-                Maximize your trading efficiency by saving time, gas, and money. Identify risks that others overlook using live sentiment analysis and smart contract scans. Enhance your trading strategy with behavioral insights and tailored suggestions.
+            {/* Investor Card */}
+            <div className="flex-1 bg-white/[0.03] border border-white/10 backdrop-blur-xl rounded-3xl p-8 hover:bg-white/[0.06] transition-all duration-500">
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-sm font-semibold mb-6 border border-indigo-500/20">
+                For Investors
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">Unshakeable Certainty</h3>
+              <p className="text-white/60 leading-relaxed text-[15px]">
+                Eliminate greenwashing. Every data point is cryptographically anchored to the blockchain, creating a fully transparent and immutable audit trail. Instantly query thousands of supplier submissions with AI to surface risks and track scope emissions with pinpoint accuracy.
               </p>
             </div>
           </div>
