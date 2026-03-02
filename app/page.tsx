@@ -12,7 +12,7 @@ export default function Home() {
       <Features />
       <HowItWorks />
 
-      <section className="relative w-full h-screen overflow-hidden flex flex-col justify-end bg-black">
+      <section id="value-created" className="relative w-full h-screen overflow-hidden flex flex-col justify-end bg-black">
         {/* Background video */}
         <video
           src="/ball.mp4"

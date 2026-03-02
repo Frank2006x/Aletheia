@@ -41,7 +41,7 @@ const features = [
 
 export default function Features() {
     return (
-        <section className="relative w-full py-24 lg:py-32 bg-[#050505] overflow-hidden">
+        <section id="features" className="relative w-full py-24 lg:py-32 bg-[#050505] overflow-hidden">
             {/* Background Glows */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 

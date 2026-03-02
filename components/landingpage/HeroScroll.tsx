@@ -15,6 +15,7 @@ import {
     useReducedMotion,
     MotionValue,
 } from "framer-motion";
+import Link from "next/link";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const FRAME_PREFIX = "/sequence/ezgif-frame-";
@@ -211,7 +212,7 @@ function TextOverlay({
                 ))}
                 {slide.isCTA && (
                     <motion.div className="mt-8 pointer-events-auto" style={{ opacity }}>
-                        <button className="hero-cta-button group relative inline-flex items-center gap-2 px-8 py-4 rounded-full text-sm font-semibold text-white bg-white/10 backdrop-blur-md border border-white/[0.08] hover:bg-white/15 hover:border-white/20 transition-all duration-500 ease-out">
+                        <Link href="/sign-in" className="hero-cta-button group relative inline-flex items-center gap-2 px-8 py-4 rounded-full text-sm font-semibold text-white bg-white/10 backdrop-blur-md border border-white/[0.08] hover:bg-white/15 hover:border-white/20 transition-all duration-500 ease-out">
                             <span className="relative z-10">Get Started</span>
                             <svg
                                 className="relative z-10 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
@@ -228,7 +229,7 @@ function TextOverlay({
                             </svg>
                             {/* Glow */}
                             <span className="absolute inset-0 rounded-full bg-gradient-to-r blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                        </button>
+                        </Link>
                     </motion.div>
                 )}
             </motion.div>
