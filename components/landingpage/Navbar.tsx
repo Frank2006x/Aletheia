@@ -3,11 +3,28 @@
 import React from "react";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 import { User } from "lucide-react";
 
 const Navbar = () => {
   const { data: session } = useSession();
   const user = session?.user;
+  const router = useRouter();
+
+  const handleProfileClick = async () => {
+    try {
+      const res = await fetch("/api/role");
+      const data = await res.json();
+      const role = data.role as "investor" | "supplier" | null;
+      if (role === "supplier") {
+        router.push("/supplier/profile");
+      } else {
+        router.push("/investor/profile");
+      }
+    } catch {
+      router.push("/investor/profile");
+    }
+  };
 
   return (
     <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-4xl">
@@ -21,22 +38,13 @@ const Navbar = () => {
 
         {/* Links */}
         <div className="hidden md:flex items-center gap-6">
-          <Link
-            href="#features"
-            className="text-sm font-medium text-white/70 hover:text-white transition-colors duration-200"
-          >
+          <Link href="#features" className="text-sm font-medium text-white/70 hover:text-white transition-colors duration-200">
             Features
           </Link>
-          <Link
-            href="#how-it-works"
-            className="text-sm font-medium text-white/70 hover:text-white transition-colors duration-200"
-          >
+          <Link href="#how-it-works" className="text-sm font-medium text-white/70 hover:text-white transition-colors duration-200">
             How it Works
           </Link>
-          <Link
-            href="#value-created"
-            className="text-sm font-medium text-white/70 hover:text-white transition-colors duration-200"
-          >
+          <Link href="#value-created" className="text-sm font-medium text-white/70 hover:text-white transition-colors duration-200">
             Value Created
           </Link>
         </div>
@@ -44,24 +52,17 @@ const Navbar = () => {
         {/* CTA / Profile */}
         <div>
           {user ? (
-            <Link
-              href="/profile"
+            <button
+              onClick={handleProfileClick}
               className="flex items-center gap-2.5 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.05] hover:bg-white/[0.09] transition-all duration-200 group"
             >
               {user.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={user.image}
-                  alt={user.name ?? "Profile"}
-                  className="w-6 h-6 rounded-full object-cover"
-                />
+                <img src={user.image} alt={user.name ?? "Profile"} className="w-6 h-6 rounded-full object-cover" />
               ) : (
                 <div
                   className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold"
-                  style={{
-                    background: "oklch(72.786% 0.24093 143.274 / 0.25)",
-                    color: "oklch(72.786% 0.24093 143.274)",
-                  }}
+                  style={{ background: "oklch(72.786% 0.24093 143.274 / 0.25)", color: "oklch(72.786% 0.24093 143.274)" }}
                 >
                   {user.name?.[0]?.toUpperCase() ?? <User className="w-3 h-3" />}
                 </div>
@@ -69,7 +70,7 @@ const Navbar = () => {
               <span className="text-sm font-medium text-white/80 group-hover:text-white transition-colors max-w-[120px] truncate">
                 {user.name?.split(" ")[0] ?? "Profile"}
               </span>
-            </Link>
+            </button>
           ) : (
             <Link
               href="/sign-in"

@@ -19,7 +19,9 @@ export default function SignInPage() {
         // Pass role via callbackURL — profile page reads ?role= and registers it
         await signIn.social({
             provider: "google",
-            callbackURL: `/profile?role=${role}`,
+            callbackURL: role === "investor"
+                ? `/investor/profile?role=investor`
+                : `/supplier/profile?role=supplier`,
         });
         setLoading(false);
     };
@@ -65,8 +67,8 @@ export default function SignInPage() {
                                         key={r}
                                         onClick={() => setRole(r)}
                                         className={`group relative flex flex-col items-start gap-1.5 rounded-xl border p-4 text-left transition-all duration-200 ${active
-                                                ? "border-primary/50 bg-primary/[0.08]"
-                                                : "border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+                                            ? "border-primary/50 bg-primary/[0.08]"
+                                            : "border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
                                             }`}
                                     >
                                         <div className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${active ? "bg-primary/20" : "bg-white/[0.06]"
