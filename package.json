@@ -19,6 +19,7 @@
     "@langchain/langgraph": "^1.2.0",
     "@langchain/textsplitters": "^1.0.1",
     "@neondatabase/serverless": "^1.0.2",
+    "better-auth": "^1.5.1",
     "chart.js": "^4.5.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

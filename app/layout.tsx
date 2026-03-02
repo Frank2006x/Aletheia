@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { Saira } from "next/font/google";
 import "./globals.css";
-import LenisProvider from "@/components/landingpage/LenisProvider";
-
-import Navbar from "@/components/landingpage/Navbar";
-import ScrollProgress from "@/components/landingpage/ScrollProgress";
+import ConditionalLayout from "@/components/ConditionalLayout";
 
 const saira = Saira({
   variable: "--font-saira",
@@ -26,11 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${saira.variable}`}>
       <body className="antialiased">
-        <LenisProvider>
-          <ScrollProgress />
-          
-          {children}
-        </LenisProvider>
+        <ConditionalLayout>{children}</ConditionalLayout>
       </body>
     </html>
   );
