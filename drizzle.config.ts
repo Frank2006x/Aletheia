@@ -1,18 +1,18 @@
-import { config } from 'dotenv';
-import { resolve } from 'path';
-import type { Config } from 'drizzle-kit';
+import { config } from "dotenv";
+import { resolve } from "path";
+import type { Config } from "drizzle-kit";
 
 // Load .env.local file - using process.cwd() for better path resolution
-config({ path: resolve(process.cwd(), '.env.local') });
+config({ path: resolve(process.cwd(), ".env.local") });
 
 if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL is not defined in .env.local');
+  throw new Error("DATABASE_URL is not defined in .env.local");
 }
 
 export default {
-  schema: './core/db/schema.ts',
-  out: './drizzle',
-  dialect: 'postgresql',
+  schema: "./core/db/schema.ts",
+  out: "./drizzle",
+  dialect: "postgresql",
   dbCredentials: {
     url: process.env.DATABASE_URL,
   },

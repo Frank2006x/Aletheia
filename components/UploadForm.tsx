@@ -12,9 +12,16 @@ import {
 } from "@/components/ui/card";
 import type { CsvUploadResponse, AutoAnalysisResult } from "@/types";
 
+interface CsvData {
+  headers: string[];
+  rows: string[][];
+  fileName: string;
+}
+
 interface UploadFormProps {
   onUploadSuccess: (
     uploadId: string,
+    csvData: CsvData,
     autoAnalysis?: AutoAnalysisResult,
   ) => void;
 }
@@ -26,6 +33,27 @@ export default function UploadForm({ onUploadSuccess }: UploadFormProps) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
+
+  const parseCsv = async (file: File): Promise<CsvData> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const text = e.target?.result as string;
+          const lines = text.split("\n").filter((line) => line.trim());
+          const headers = lines[0].split(",").map((h) => h.trim());
+          const rows = lines
+            .slice(1)
+            .map((line) => line.split(",").map((cell) => cell.trim()));
+          resolve({ headers, rows, fileName: file.name });
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsText(file);
+    });
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -60,6 +88,9 @@ export default function UploadForm({ onUploadSuccess }: UploadFormProps) {
     setSuccess("");
 
     try {
+      // Parse CSV data
+      const csvData = await parseCsv(file);
+
       const formData = new FormData();
       formData.append("file", file);
       formData.append("supplierId", supplierId);
@@ -74,7 +105,7 @@ export default function UploadForm({ onUploadSuccess }: UploadFormProps) {
 
       if (data.success && data.upload) {
         setSuccess("CSV uploaded successfully!");
-        onUploadSuccess(data.upload.id, data.autoAnalysis);
+        onUploadSuccess(data.upload.id, csvData, data.autoAnalysis);
       } else {
         setError(data.error || "Upload failed");
       }

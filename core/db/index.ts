@@ -7,9 +7,9 @@ const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
   console.error(
-    '❌ DATABASE_URL environment variable is not set. Make sure .env.local is configured.'
+    "❌ DATABASE_URL environment variable is not set. Make sure .env.local is configured.",
   );
-  throw new Error('DATABASE_URL environment variable is not set');
+  throw new Error("DATABASE_URL environment variable is not set");
 }
 
 // Create Neon HTTP client
