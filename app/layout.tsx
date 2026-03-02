@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Saira } from "next/font/google";
 import "./globals.css";
-import LenisProvider from "@/components/LenisProvider";
+import LenisProvider from "@/components/landingpage/LenisProvider";
 
-import Navbar from "@/components/Navbar";
-import ScrollProgress from "@/components/ScrollProgress";
+import Navbar from "@/components/landingpage/Navbar";
+import ScrollProgress from "@/components/landingpage/ScrollProgress";
 
 const saira = Saira({
   variable: "--font-saira",

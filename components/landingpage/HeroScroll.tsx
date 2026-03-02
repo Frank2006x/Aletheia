@@ -19,7 +19,8 @@ import {
 // ─── Constants ───────────────────────────────────────────────────────────────
 const FRAME_PREFIX = "/sequence/ezgif-frame-";
 const FRAME_EXT = ".jpg";
-const TOTAL_FRAMES = 120;
+const TOTAL_FRAMES = 115;
+const START_FRAME = 6;
 const LERP_FACTOR = 0.12;
 
 // ─── Text Timeline ──────────────────────────────────────────────────────────
@@ -39,8 +40,8 @@ const TEXT_SLIDES: TextSlide[] = [
             <span key="3"><span className="text-primary">Verifiable</span> by design.</span>
         ],
         position: "left",
-        rangeStart: 0.35,
-        rangeEnd: 0.60,
+        rangeStart: 0.15,
+        rangeEnd: 0.50,
     },
     {
         id: "transparent",
@@ -50,14 +51,20 @@ const TEXT_SLIDES: TextSlide[] = [
             <span key="4" className="text-primary">Immutable.</span>
         ],
         position: "right",
-        rangeStart: 0.60,
-        rangeEnd: 0.85,
+        rangeStart: 0.50,
+        rangeEnd: 0.83,
     },
     {
         id: "cta",
-        lines: ["Build on truth."],
+        lines: [
+            <span key="cta-title" className="relative group inline-block mb-8">
+                <span className="relative z-10 text-7xl md:text-[8rem] lg:text-[10rem] font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white via-white/90 to-white/20 drop-shadow-2xl">
+                    Aletheia
+                </span>
+            </span>,
+        ],
         position: "center",
-        rangeStart: 0.85,
+        rangeStart: 0.70,
         rangeEnd: 1,
         isCTA: true,
     },
@@ -138,19 +145,19 @@ function TextOverlay({
     const opacity = useTransform(
         scrollProgress,
         [slide.rangeStart, fadeInEnd, fadeOutStart, slide.rangeEnd],
-        [0, 1, 1, 0]
+        [0, 1, 1, slide.isCTA ? 1 : 0]
     );
 
     const blur = useTransform(
         scrollProgress,
         [slide.rangeStart, fadeInEnd, fadeOutStart, slide.rangeEnd],
-        [8, 0, 0, 8]
+        [8, 0, 0, slide.isCTA ? 0 : 8]
     );
 
     const y = useTransform(
         scrollProgress,
         [slide.rangeStart, fadeInEnd, fadeOutStart, slide.rangeEnd],
-        [40, 0, 0, -40]
+        [40, 0, 0, slide.isCTA ? 0 : -40]
     );
 
     const filterBlur = useTransform(blur, (v) => `blur(${v}px)`);
@@ -220,7 +227,7 @@ function TextOverlay({
                                 />
                             </svg>
                             {/* Glow */}
-                            <span className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/40 to-indigo-500/40 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <span className="absolute inset-0 rounded-full bg-gradient-to-r blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                         </button>
                     </motion.div>
                 )}
@@ -251,7 +258,7 @@ export default function HeroScroll() {
     // ─── Frame URLs ──────────────────────────────────────────────────────────
     const frameUrls = useMemo(() => {
         return Array.from({ length: TOTAL_FRAMES }, (_, i) =>
-            `${FRAME_PREFIX}${padFrame(i + 1)}${FRAME_EXT}`
+            `${FRAME_PREFIX}${padFrame(i + START_FRAME)}${FRAME_EXT}`
         );
     }, []);
 
