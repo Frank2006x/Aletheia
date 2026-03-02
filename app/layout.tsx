@@ -28,7 +28,7 @@ export default function RootLayout({
       <body className="antialiased">
         <LenisProvider>
           <ScrollProgress />
-          <Navbar />
+          
           {children}
         </LenisProvider>
       </body>

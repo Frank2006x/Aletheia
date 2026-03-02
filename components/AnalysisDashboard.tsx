@@ -12,7 +12,7 @@ export function AnalysisDashboard({ analysis }: AnalysisDashboardProps) {
   const { charts, analysis: reportAnalysis, esgScore } = analysis;
 
   return (
-    <div className="grid grid-cols-2 gap-4 h-full overflow-y-auto p-4">
+    <div className="grid grid-cols-2 gap-4 p-4">
       {/* Row 1: Charts */}
       {charts.slice(0, 2).map((chartWithInsight, index) => (
         <Card
