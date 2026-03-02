@@ -25,7 +25,7 @@ const LERP_FACTOR = 0.12;
 // ─── Text Timeline ──────────────────────────────────────────────────────────
 interface TextSlide {
     id: string;
-    lines: string[];
+    lines: React.ReactNode[];
     position: "center" | "left" | "right";
     rangeStart: number;
     rangeEnd: number;
@@ -34,28 +34,23 @@ interface TextSlide {
 
 const TEXT_SLIDES: TextSlide[] = [
     {
-        id: "intro",
-        lines: [
-            "Truth that cannot be hidden",
-            "Responsibility",
-            "Intelligence that cannot be compromised",
-        ],
-        position: "center",
-        rangeStart: 0,
-        rangeEnd: 0.25,
-    },
-    {
         id: "verify",
-        lines: ["Verifiable by design."],
+        lines: [
+            <span key="3"><span className="text-primary">Verifiable</span> by design.</span>
+        ],
         position: "left",
-        rangeStart: 0.25,
-        rangeEnd: 0.55,
+        rangeStart: 0.35,
+        rangeEnd: 0.60,
     },
     {
         id: "transparent",
-        lines: ["Transparent.", "Auditable.", "Immutable."],
+        lines: [
+            "Transparent.",
+            "Auditable.",
+            <span key="4" className="text-primary">Immutable.</span>
+        ],
         position: "right",
-        rangeStart: 0.55,
+        rangeStart: 0.60,
         rangeEnd: 0.85,
     },
     {
@@ -86,7 +81,7 @@ function LoadingScreen({ progress }: { progress: number }) {
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505]">
             <div className="relative mb-8">
                 {/* Pulsing glow */}
-                <div className="absolute inset-0 rounded-full bg-emerald-500/20 blur-3xl animate-pulse" />
+                <div className="absolute inset-0 rounded-full bg-primary/20 blur-3xl animate-pulse" />
                 <svg
                     className="relative w-16 h-16 animate-spin-slow"
                     viewBox="0 0 64 64"
@@ -112,8 +107,8 @@ function LoadingScreen({ progress }: { progress: number }) {
                     />
                     <defs>
                         <linearGradient id="loader-grad" x1="0" y1="0" x2="64" y2="64">
-                            <stop stopColor="#34d399" />
-                            <stop offset="1" stopColor="#6366f1" />
+                            <stop stopColor="var(--color-primary)" />
+                            <stop offset="1" stopColor="var(--color-primary)" stopOpacity="0.5" />
                         </linearGradient>
                     </defs>
                 </svg>
@@ -169,18 +164,32 @@ function TextOverlay({
     return (
         <motion.div
             className={`absolute inset-0 z-20 flex flex-col ${positionClasses[slide.position]} pointer-events-none px-6`}
-            style={{ opacity, y, filter: filterBlur }}
+            style={{ opacity, filter: filterBlur }}
         >
-            <div className="max-w-2xl">
+            {/* Background Gradient Overlay to improve text readability */}
+            <div
+                className="absolute inset-0 z-0 opacity-70"
+                style={{
+                    background: slide.position === 'center'
+                        ? 'radial-gradient(circle at center, rgba(5,5,5,0.7) 0%, rgba(5,5,5,0) 60%)'
+                        : slide.position === 'left'
+                            ? 'linear-gradient(to right, rgba(5,5,5,0.8) 0%, rgba(5,5,5,0) 70%)'
+                            : 'linear-gradient(to left, rgba(5,5,5,0.8) 0%, rgba(5,5,5,0) 70%)'
+                }}
+            />
+
+            <motion.div className="max-w-3xl relative z-10" style={{ y }}>
                 {slide.lines.map((line, i) => (
-                    <motion.p
+                    <motion.div
                         key={i}
                         className={
                             slide.isCTA
-                                ? "text-3xl md:text-5xl lg:text-6xl font-bold text-white/90 tracking-tight leading-tight"
-                                : slide.position === "center" && slide.id === "intro"
-                                    ? "text-2xl md:text-4xl lg:text-5xl font-semibold text-white/90 tracking-tight leading-snug mb-2"
-                                    : "text-2xl md:text-4xl lg:text-5xl font-semibold text-white/90 tracking-tight leading-tight"
+                                ? "text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-tight"
+                                : slide.id === "title"
+                                    ? "mb-4"
+                                    : slide.position === "center" && slide.id === "intro"
+                                        ? "text-3xl md:text-5xl lg:text-6xl font-semibold text-white/95 tracking-tight leading-snug mb-3 drop-shadow-lg"
+                                        : "text-3xl md:text-5xl lg:text-6xl font-semibold text-white/95 tracking-tight leading-tight drop-shadow-lg"
                         }
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -191,7 +200,7 @@ function TextOverlay({
                         }}
                     >
                         {line}
-                    </motion.p>
+                    </motion.div>
                 ))}
                 {slide.isCTA && (
                     <motion.div className="mt-8 pointer-events-auto" style={{ opacity }}>
@@ -211,11 +220,11 @@ function TextOverlay({
                                 />
                             </svg>
                             {/* Glow */}
-                            <span className="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-500/20 to-indigo-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <span className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/40 to-indigo-500/40 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                         </button>
                     </motion.div>
                 )}
-            </div>
+            </motion.div>
         </motion.div>
     );
 }
@@ -270,37 +279,49 @@ export default function HeroScroll() {
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, rect.width, rect.height);
 
-        // Cover-fit on desktop, contain-fit on mobile
-        const isMobile = rect.width < 768;
-        const imgAspect = img.naturalWidth / img.naturalHeight;
+        // Core dimensions
+        const imgW = img.naturalWidth;
+        const imgH = img.naturalHeight;
+        const imgAspect = imgW / imgH;
         const canvasAspect = rect.width / rect.height;
 
-        let drawW: number, drawH: number, drawX: number, drawY: number;
+        let drawW = rect.width;
+        let drawH = rect.height;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        const isMobile = rect.width < 768;
 
         if (isMobile) {
-            // Contain
+            // CONTAIN logic for mobile (shows full frame)
             if (canvasAspect > imgAspect) {
+                // Canvas is wider than image aspect -> align height, center width
                 drawH = rect.height;
                 drawW = drawH * imgAspect;
+                offsetX = (rect.width - drawW) / 2;
             } else {
+                // Canvas is taller than image aspect -> align width, center height
                 drawW = rect.width;
                 drawH = drawW / imgAspect;
+                offsetY = (rect.height - drawH) / 2;
             }
         } else {
-            // Cover
+            // COVER logic for desktop (fills screen, crops edges if needed, perfectly centered)
             if (canvasAspect > imgAspect) {
+                // Canvas is wider than image -> width matches, height crops (overflows top/bottom)
                 drawW = rect.width;
                 drawH = drawW / imgAspect;
+                offsetY = (rect.height - drawH) / 2;
             } else {
+                // Canvas is taller than image -> height matches, width crops (overflows left/right)
                 drawH = rect.height;
                 drawW = drawH * imgAspect;
+                offsetX = (rect.width - drawW) / 2;
             }
         }
 
-        drawX = (rect.width - drawW) / 2;
-        drawY = (rect.height - drawH) / 2;
-
-        ctx.drawImage(img, drawX, drawY, drawW, drawH);
+        // Apply Math.round to avoid sub-pixel blurring and ensure crisp lines
+        ctx.drawImage(img, Math.round(offsetX), Math.round(offsetY), Math.round(drawW), Math.round(drawH));
     }, []);
 
     // ─── Lerp animation loop ────────────────────────────────────────────────
