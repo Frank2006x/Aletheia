@@ -4,6 +4,7 @@ import "./globals.css";
 import LenisProvider from "@/components/LenisProvider";
 
 import Navbar from "@/components/Navbar";
+import ScrollProgress from "@/components/ScrollProgress";
 
 const saira = Saira({
   variable: "--font-saira",
@@ -26,6 +27,7 @@ export default function RootLayout({
     <html lang="en" className={`${saira.variable}`}>
       <body className="antialiased">
         <LenisProvider>
+          <ScrollProgress />
           <Navbar />
           {children}
         </LenisProvider>

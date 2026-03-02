@@ -9,9 +9,7 @@ const Navbar = () => {
       <nav className="flex items-center justify-between px-6 py-2.5 rounded-full border border-white/[0.08] bg-white/[0.01] backdrop-blur-[20px] shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
         {/* Brand */}
         <div className="flex items-center gap-2 text-white font-bold text-xl tracking-tight">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-300">
-            <span className="text-white text-xs">Α</span>
-          </div>
+          
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
             Aletheia
           </span>
