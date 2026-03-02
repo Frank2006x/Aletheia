@@ -13,7 +13,7 @@ const saira = Saira({
 });
 
 export const metadata: Metadata = {
-  title: "Synthio — Intelligence that cannot be compromised",
+  title: "Aletheia",
   description:
     "AI-powered platform built on truth. Verifiable, transparent, auditable, immutable.",
 };
