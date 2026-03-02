@@ -1,17 +1,13 @@
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { MemorySaver } from "@langchain/langgraph";
-import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { createAgent } from "langchain";
+import { HumanMessage } from "@langchain/core/messages";
 import { chartGeneratorTool } from "@/core/tool/chart-generator";
 import type { ChartConfig } from "@/types";
 
-// Initialize memory saver for conversation persistence
-const checkpointer = new MemorySaver();
-
 /**
- * Creates a LangGraph agent with CSV data knowledge and chart generation capabilities
+ * Creates a LangChain v1 agent with CSV data knowledge and chart generation capabilities
  */
-export function createCsvAgent() {
+export function createCsvAgent(csvContext: string) {
   // Initialize Google Gemini model
   const model = new ChatGoogleGenerativeAI({
     model: "gemini-2.5-flash",
@@ -19,27 +15,7 @@ export function createCsvAgent() {
     apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
   });
 
-  // Create agent with tools
-  const agent = createReactAgent({
-    llm: model,
-    tools: [chartGeneratorTool],
-    checkpointSaver: checkpointer,
-  });
-
-  return agent;
-}
-
-/**
- * Invokes the agent with a message and CSV data context
- */
-export async function invokeCsvAgent(
-  message: string,
-  csvContext: string,
-  threadId: string,
-): Promise<{ response: string; chartConfig?: ChartConfig }> {
-  const agent = createCsvAgent();
-
-  // Create system message with CSV context
+  // System prompt with CSV context
   const systemPrompt = `You are an AI assistant analyzing CSV data from a company's sustainability report. You have access to the full dataset below.
 
 **CSV DATA:**
@@ -61,11 +37,31 @@ ${csvContext}
 
 Now, help the user with their question.`;
 
+  // Create agent using LangChain v1 API
+  const agent = createAgent({
+    model: model,
+    tools: [chartGeneratorTool],
+    systemPrompt: systemPrompt,
+  });
+
+  return agent;
+}
+
+/**
+ * Invokes the agent with a message and CSV data context
+ */
+export async function invokeCsvAgent(
+  message: string,
+  csvContext: string,
+  threadId: string,
+): Promise<{ response: string; chartConfig?: ChartConfig }> {
+  const agent = createCsvAgent(csvContext);
+
   try {
-    // Invoke the agent
+    // Invoke the agent with just the user message
     const result = await agent.invoke(
       {
-        messages: [new SystemMessage(systemPrompt), new HumanMessage(message)],
+        messages: [new HumanMessage(message)],
       },
       {
         configurable: {
