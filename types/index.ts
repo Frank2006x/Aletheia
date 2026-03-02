@@ -9,14 +9,45 @@ export interface CsvUploadResponse {
     fileSize: number;
     uploadedAt: Date;
   };
+  autoAnalysis?: AutoAnalysisResult;
   message?: string;
   error?: string;
+}
+
+export interface ReportAnalysis {
+  merits: string[];
+  improvements: string[];
+  griCompliance: {
+    score: number;
+    coveredStandards: string[];
+    missingStandards: string[];
+  };
+  recommendations: string[];
+  dataQuality?: {
+    completeness: number;
+    consistency: string;
+    reliability: string;
+  };
+  analyzedAt?: string;
+}
+
+export interface ChartWithInsight {
+  chartConfig: ChartConfig;
+  insight?: string;
+}
+
+export interface AutoAnalysisResult {
+  summary: string;
+  esgScore: number;
+  charts: ChartWithInsight[];
+  analysis: ReportAnalysis;
 }
 
 export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   chartConfig?: ChartConfig;
+  reportAnalysis?: ReportAnalysis;
   timestamp: Date;
 }
 

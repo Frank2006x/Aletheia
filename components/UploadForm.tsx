@@ -10,10 +10,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { CsvUploadResponse } from "@/types";
+import type { CsvUploadResponse, AutoAnalysisResult } from "@/types";
 
 interface UploadFormProps {
-  onUploadSuccess: (uploadId: string) => void;
+  onUploadSuccess: (
+    uploadId: string,
+    autoAnalysis?: AutoAnalysisResult,
+  ) => void;
 }
 
 export default function UploadForm({ onUploadSuccess }: UploadFormProps) {
@@ -27,7 +30,10 @@ export default function UploadForm({ onUploadSuccess }: UploadFormProps) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      if (selectedFile.type !== "text/csv" && !selectedFile.name.endsWith(".csv")) {
+      if (
+        selectedFile.type !== "text/csv" &&
+        !selectedFile.name.endsWith(".csv")
+      ) {
         setError("Please select a CSV file");
         setFile(null);
         return;
@@ -68,7 +74,7 @@ export default function UploadForm({ onUploadSuccess }: UploadFormProps) {
 
       if (data.success && data.upload) {
         setSuccess("CSV uploaded successfully!");
-        onUploadSuccess(data.upload.id);
+        onUploadSuccess(data.upload.id, data.autoAnalysis);
       } else {
         setError(data.error || "Upload failed");
       }
@@ -117,9 +123,7 @@ export default function UploadForm({ onUploadSuccess }: UploadFormProps) {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
-            CSV File
-          </label>
+          <label className="text-sm font-medium text-gray-700">CSV File</label>
           <Input
             type="file"
             accept=".csv"
@@ -139,7 +143,7 @@ export default function UploadForm({ onUploadSuccess }: UploadFormProps) {
           disabled={!file || !supplierId || !investorId || uploading}
           className="w-full bg-[#028090] hover:bg-[#026978]"
         >
-          {uploading ? "Uploading..." : "Upload CSV"}
+          {uploading ? "Uploading & Analyzing..." : "Upload CSV"}
         </Button>
 
         {error && (
