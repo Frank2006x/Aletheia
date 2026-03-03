@@ -210,7 +210,7 @@ export default function TokenUploadPage({
                 </button>
               ))}
               <button
-                onClick={() => router.push("/dashboard")}
+                onClick={() => router.push(isInvestor ? "/investor/dashboard" : "/supplier/dashboard")}
                 className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg bg-white/[0.05] text-white/50 hover:text-white hover:bg-white/[0.08] border border-white/[0.08] transition-all"
               >
                 <ChevronLeft className="w-3 h-3" /> Dashboard
@@ -262,7 +262,7 @@ export default function TokenUploadPage({
             {`${process.env.NEXT_PUBLIC_APP_URL ?? ""}/upload/${token}`}
           </div>
           <button
-            onClick={() => router.push("/dashboard")}
+            onClick={() => router.push(isInvestor ? "/investor/dashboard" : "/supplier/dashboard")}
             className="w-full py-2.5 bg-primary hover:bg-primary/90 text-black text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2"
           >
             <ChevronLeft className="w-4 h-4" /> Back to Dashboard

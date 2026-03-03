@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSession } from "@/lib/auth-client";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -24,6 +24,22 @@ interface LinkItem {
     } | null;
 }
 
+// Isolated so useSearchParams is inside a Suspense boundary
+function RoleRegistrar({ session, router }: { session: { user: { id: string } } | null; router: ReturnType<typeof useRouter> }) {
+    const searchParams = useSearchParams();
+    useEffect(() => {
+        if (!session) return;
+        if (searchParams.get("role") === "investor") {
+            fetch("/api/role", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ role: "investor" }),
+            }).then(() => router.replace("/investor/dashboard", { scroll: false }));
+        }
+    }, [session, searchParams, router]);
+    return null;
+}
+
 export default function InvestorDashboardPage() {
     const { data: session, isPending } = useSession();
     const router = useRouter();
@@ -36,19 +52,6 @@ export default function InvestorDashboardPage() {
     useEffect(() => {
         if (!isPending && !session) router.push("/sign-in");
     }, [session, isPending, router]);
-
-    // Register role on first login
-    const searchParams = useSearchParams();
-    useEffect(() => {
-        if (!session) return;
-        if (searchParams.get("role") === "investor") {
-            fetch("/api/role", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ role: "investor" }),
-            }).then(() => router.replace("/investor/dashboard", { scroll: false }));
-        }
-    }, [session, searchParams, router]);
 
     useEffect(() => {
         if (session) fetchLinks();
@@ -101,6 +104,9 @@ export default function InvestorDashboardPage() {
 
     return (
         <div className="min-h-screen bg-[#050505]">
+            <Suspense fallback={null}>
+                <RoleRegistrar session={session} router={router} />
+            </Suspense>
             {/* Header */}
             <div className="sticky top-0 z-10 bg-black/70 backdrop-blur-xl border-b border-white/[0.08] px-6 py-4 flex items-center justify-between">
                 <div>

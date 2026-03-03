@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -16,12 +16,15 @@ import {
 
 const INDIGO = "rgba(99,102,241,1)";
 
-export default function SupplierProfilePage() {
-    const { data: session, isPending } = useSession();
-    const router = useRouter();
+// Isolated so useSearchParams is inside a Suspense boundary
+function RoleRegistrar({
+    session, router, onDone,
+}: {
+    session: { user: { id: string } } | null;
+    router: ReturnType<typeof useRouter>;
+    onDone: () => void;
+}) {
     const searchParams = useSearchParams();
-    const [registered, setRegistered] = useState(false);
-
     useEffect(() => {
         if (!session) return;
         const setup = async () => {
@@ -33,10 +36,17 @@ export default function SupplierProfilePage() {
                 });
                 router.replace("/supplier/profile", { scroll: false });
             }
-            setRegistered(true);
+            onDone();
         };
         setup();
-    }, [session, searchParams, router]);
+    }, [session, searchParams, router, onDone]);
+    return null;
+}
+
+export default function SupplierProfilePage() {
+    const { data: session, isPending } = useSession();
+    const router = useRouter();
+    const [registered, setRegistered] = useState(false);
 
     useEffect(() => {
         if (!isPending && !session) router.push("/sign-in");
@@ -49,6 +59,9 @@ export default function SupplierProfilePage() {
     if (isPending || !session || !registered) {
         return (
             <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+                <Suspense fallback={null}>
+                    <RoleRegistrar session={session} router={router} onDone={() => setRegistered(true)} />
+                </Suspense>
                 <Loader2 className="w-5 h-5 text-indigo-400 animate-spin" />
             </div>
         );
@@ -64,6 +77,9 @@ export default function SupplierProfilePage() {
 
     return (
         <div className="min-h-screen bg-[#050505]">
+            <Suspense fallback={null}>
+                <RoleRegistrar session={session} router={router} onDone={() => setRegistered(true)} />
+            </Suspense>
             {/* Ambient glow */}
             <div className="pointer-events-none fixed inset-0 overflow-hidden">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] opacity-[0.05]"
