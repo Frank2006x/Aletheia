@@ -65,9 +65,9 @@ export default function ValueCreated() {
             <AuroraCanvas />
             <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/50 to-transparent" />
 
-            <div className="relative z-10 w-full px-6 md:px-12 lg:px-24 pb-16 md:pb-24 pt-32 flex flex-col xl:flex-row gap-12 xl:gap-24 xl:items-end max-w-[1400px] mx-auto">
+            <div className="relative z-10 w-full px-4 sm:px-6 md:px-12 lg:px-24 pb-12 sm:pb-16 md:pb-24 pt-24 sm:pt-32 flex flex-col xl:flex-row gap-8 sm:gap-12 xl:gap-24 xl:items-end max-w-[1400px] mx-auto">
                 <div ref={headingRef} className="flex-shrink-0">
-                    <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 tracking-tight leading-[1.1]">
+                    <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 tracking-tight leading-[1.1]">
                         Value Created<br />for Everyone
                     </h2>
                 </div>
@@ -75,7 +75,7 @@ export default function ValueCreated() {
                 <div className="flex flex-col md:flex-row gap-6 w-full max-w-4xl">
                     <div
                         ref={(el) => { cardRefs.current[0] = el; }}
-                        className="flex-1 bg-white/[0.03] border border-white/10 backdrop-blur-xl rounded-3xl p-8 hover:bg-white/[0.06] transition-all duration-500"
+                        className="flex-1 bg-white/[0.03] border border-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 hover:bg-white/[0.06] transition-all duration-500"
                     >
                         <div className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-sm font-semibold mb-6 border border-emerald-500/20">
                             For Suppliers
@@ -88,7 +88,7 @@ export default function ValueCreated() {
 
                     <div
                         ref={(el) => { cardRefs.current[1] = el; }}
-                        className="flex-1 bg-white/[0.03] border border-white/10 backdrop-blur-xl rounded-3xl p-8 hover:bg-white/[0.06] transition-all duration-500"
+                        className="flex-1 bg-white/[0.03] border border-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 hover:bg-white/[0.06] transition-all duration-500"
                     >
                         <div className="inline-flex items-center px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-sm font-semibold mb-6 border border-green-500/20">
                             For Investors

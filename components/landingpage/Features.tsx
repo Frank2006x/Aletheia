@@ -88,19 +88,19 @@ export default function Features() {
     }, []);
 
     return (
-        <section id="features" ref={sectionRef} className="relative w-full py-24 lg:py-32 bg-[#050505] overflow-hidden">
+        <section id="features" ref={sectionRef} className="relative w-full py-16 sm:py-24 lg:py-32 bg-[#050505] overflow-hidden">
             <CircuitCanvas />
             <div className="absolute inset-0 pointer-events-none"
                 style={{ background: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(5,5,5,0.85) 30%, rgba(5,5,5,0.1) 100%)" }}
             />
 
             <div className="container px-4 md:px-6 mx-auto relative z-10">
-                <div className="features-heading mb-16 md:mb-24 flex flex-col items-center text-center">
+                <div className="features-heading mb-10 sm:mb-16 md:mb-24 flex flex-col items-center text-center">
                     <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-primary mb-6">
                         <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
                         Unbreakable Verification
                     </div>
-                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-4 sm:mb-6">
                         How we <span className="text-primary">enforce truth</span>.
                     </h2>
                     <p className="max-w-[700px] text-lg text-white/50">
@@ -113,7 +113,7 @@ export default function Features() {
                         <div
                             key={index}
                             ref={(el) => { cardRefs.current[index] = el; }}
-                            className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white/[0.03] border border-white/[0.08] p-8 md:p-10 hover:bg-white/[0.055] transition-colors duration-500 ${feature.className}`}
+                            className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white/[0.03] border border-white/[0.08] p-6 sm:p-8 md:p-10 hover:bg-white/[0.055] transition-colors duration-500 ${feature.className}`}
                         >
                             <div className="relative z-10">
                                 <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-white/[0.05] border border-white/10 group-hover:scale-110 group-hover:bg-primary/10 transition-all duration-500">

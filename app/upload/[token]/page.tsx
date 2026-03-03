@@ -174,12 +174,12 @@ export default function TokenUploadPage({
     return (
       <div className="h-screen flex flex-col bg-[#050505]">
         {/* Header */}
-        <div className="relative text-center py-3 px-4 border-b border-white/[0.08] bg-black/60 backdrop-blur-xl flex-shrink-0 z-10">
+        <div className="relative text-center py-3 px-3 sm:px-4 border-b border-white/[0.08] bg-black/60 backdrop-blur-xl flex-shrink-0 z-10">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
-          <div className="flex items-center justify-between max-w-screen-xl mx-auto">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 max-w-screen-xl mx-auto">
             <div className="text-left">
-              <h1 className="text-base font-bold text-white tracking-tight">Sustainability Report</h1>
-              <p className="text-xs text-white/35 mt-0.5">
+              <h1 className="text-sm sm:text-base font-bold text-white tracking-tight">Sustainability Report</h1>
+              <p className="text-xs text-white/35 mt-0.5 hidden sm:block">
                 {reportData?.fileName ?? csvData?.fileName ?? "Report"}
                 {reportData?.ipfsCid && (
                   <span className="ml-2">
@@ -196,7 +196,7 @@ export default function TokenUploadPage({
                 )}
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               {(["analysis", "csv"] as const).map((view) => (
                 <button
                   key={view}
@@ -220,8 +220,8 @@ export default function TokenUploadPage({
         </div>
 
         {/* Two-column layout */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-[3fr_1fr] overflow-hidden">
-          <div className="h-full overflow-y-auto bg-[#050505] border-r border-white/[0.08]" data-lenis-prevent>
+        <div className="flex-1 flex flex-col lg:grid lg:grid-cols-[3fr_1fr] overflow-hidden">
+          <div className="flex-1 lg:h-full overflow-y-auto bg-[#050505] border-b lg:border-b-0 lg:border-r border-white/[0.08] min-h-0" data-lenis-prevent>
             {activeView === "analysis" && autoAnalysis && (
               <AnalysisDashboard analysis={autoAnalysis} />
             )}
@@ -234,7 +234,7 @@ export default function TokenUploadPage({
               </div>
             )}
           </div>
-          <div className="h-full overflow-hidden bg-black/30" data-lenis-prevent>
+          <div className="h-[50vh] lg:h-full overflow-hidden bg-black/30" data-lenis-prevent>
             <ChatInterface pdfUploadId={effectiveUploadId} threadId={threadId} />
           </div>
         </div>

@@ -37,18 +37,18 @@ export default function UploadPage() {
   return (
     <div className="h-screen bg-[#050505] flex flex-col overflow-hidden">
       {/* Header — fixed at top */}
-      <div className="relative text-center py-5 px-4 border-b border-white/[0.08] bg-black/40 backdrop-blur-xl flex-shrink-0 z-10">
+      <div className="relative text-center py-4 sm:py-5 px-4 border-b border-white/[0.08] bg-black/40 backdrop-blur-xl flex-shrink-0 z-10">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
-        <h1 className="text-2xl font-bold tracking-tight text-white">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
           Aletheia
         </h1>
-        <p className="text-sm text-white/40 mt-1">
+        <p className="text-xs sm:text-sm text-white/40 mt-1 hidden sm:block">
           Upload a sustainability report CSV and get instant AI-powered analysis
         </p>
         {pdfUploadId && (
           <button
             onClick={reset}
-            className="absolute top-1/2 -translate-y-1/2 right-4 px-4 py-2 text-sm font-medium text-red-400 border border-red-500/40 rounded-full hover:bg-red-500/10 transition-all duration-300 flex items-center gap-2"
+            className="absolute top-1/2 -translate-y-1/2 right-2 sm:right-4 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-red-400 border border-red-500/40 rounded-full hover:bg-red-500/10 transition-all duration-300 flex items-center gap-1.5 sm:gap-2"
             title="Reset Analysis"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -57,7 +57,7 @@ export default function UploadPage() {
               <line x1="10" y1="11" x2="10" y2="17"></line>
               <line x1="14" y1="11" x2="14" y2="17"></line>
             </svg>
-            Reset
+            <span className="hidden sm:inline">Reset</span>
           </button>
         )}
       </div>
@@ -117,10 +117,10 @@ export default function UploadPage() {
           </div>
 
           {/* 75/25 split — left scrolls, right chat is fixed */}
-          <div className="flex-1 flex overflow-hidden">
-            {/* Left — scrollable content (75%) */}
+          <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+            {/* Left — scrollable content (analysis/CSV) */}
             <div
-              className="flex-[3] overflow-y-auto border-r border-white/[0.08] bg-[#050505]"
+              className="flex-1 lg:flex-[3] overflow-y-auto border-b lg:border-b-0 lg:border-r border-white/[0.08] bg-[#050505] min-h-0"
               data-lenis-prevent
             >
               {activeView === "analysis" && autoAnalysis && (
@@ -135,9 +135,9 @@ export default function UploadPage() {
               )}
             </div>
 
-            {/* Right — fixed chat (25%) */}
+            {/* Right — chat (stacks below on mobile) */}
             <div
-              className="flex-1 overflow-hidden bg-black/30 min-w-[300px] max-w-[380px]"
+              className="h-[50vh] lg:h-auto lg:flex-1 overflow-hidden bg-black/30 lg:min-w-[300px] lg:max-w-[380px]"
               data-lenis-prevent
             >
               <ChatInterface pdfUploadId={pdfUploadId} threadId={threadId} />

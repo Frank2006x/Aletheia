@@ -20,7 +20,7 @@ export function AnalysisDashboard({ analysis }: AnalysisDashboardProps) {
   const { charts, analysis: reportAnalysis, esgScore } = analysis;
 
   return (
-    <div className="grid grid-cols-2 gap-4 p-4 bg-[#050505]">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-[#050505]">
       {/* Row 1: Charts */}
       {charts.slice(0, 2).map((chartWithInsight, index) => (
         <Card
@@ -116,14 +116,14 @@ export function AnalysisDashboard({ analysis }: AnalysisDashboardProps) {
       </Card>
 
       {/* Row 3: Drawbacks */}
-      <Card className="p-6 bg-[#0a0a0a] border border-white/[0.08] flex flex-col col-span-2">
+      <Card className="p-6 bg-[#0a0a0a] border border-white/[0.08] flex flex-col col-span-1 md:col-span-2">
         <div className="flex items-center gap-2 mb-4 pb-3 border-b border-white/[0.06]">
           <ClipboardList className="w-4 h-4 text-white/50" />
           <span className="text-xs font-medium text-white/50 uppercase tracking-wider">
             GRI Standards Coverage
           </span>
         </div>
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {reportAnalysis.griCompliance.missingStandards.length > 0 && (
             <div>
               <div className="flex items-center gap-1.5 mb-3">

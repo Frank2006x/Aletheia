@@ -108,11 +108,11 @@ export default function InvestorDashboardPage() {
                 <RoleRegistrar session={session} router={router} />
             </Suspense>
             {/* Header */}
-            <div className="sticky top-0 z-10 bg-black/70 backdrop-blur-xl border-b border-white/[0.08] px-6 py-4 flex items-center justify-between">
+            <div className="sticky top-0 z-10 bg-black/70 backdrop-blur-xl border-b border-white/[0.08] px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
                 <div>
                     <div className="flex items-center gap-2">
-                        <BarChart3 className="w-5 h-5 text-primary" />
-                        <h1 className="text-xl font-bold text-white tracking-tight">Investor Dashboard</h1>
+                        <BarChart3 className="w-5 h-5 text-primary hidden sm:block" />
+                        <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">Investor Dashboard</h1>
                     </div>
                     <p className="text-xs text-white/35 mt-0.5 pl-7">{session.user.email}</p>
                 </div>
@@ -138,7 +138,7 @@ export default function InvestorDashboardPage() {
             </div>
 
             {/* Content */}
-            <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-4 sm:space-y-6">
                 {/* New link banner */}
                 {newLink && (
                     <div className="bg-primary/[0.06] border border-primary/25 rounded-xl p-4">
@@ -164,11 +164,11 @@ export default function InvestorDashboardPage() {
                 )}
 
                 {/* Stats */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                     {stats.map((stat) => (
-                        <div key={stat.label} className="bg-[#0a0a0a] border border-white/[0.08] rounded-xl p-5 flex flex-col items-center gap-1">
+                        <div key={stat.label} className="bg-[#0a0a0a] border border-white/[0.08] rounded-xl p-4 sm:p-5 flex flex-row sm:flex-col items-center sm:items-center gap-3 sm:gap-1">
                             {stat.icon}
-                            <p className="text-3xl font-bold text-white tabular-nums">{stat.value}</p>
+                            <p className="text-2xl sm:text-3xl font-bold text-white tabular-nums">{stat.value}</p>
                             <p className="text-xs text-white/35 uppercase tracking-wider">{stat.label}</p>
                         </div>
                     ))}
@@ -192,61 +192,63 @@ export default function InvestorDashboardPage() {
                             <p className="text-white/20 text-xs">Click <span className="text-primary/60 font-medium">Create Upload Link</span> to get started.</p>
                         </div>
                     ) : (
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-white/[0.06]">
-                                    {["Token", "Status", "Created", "Report", "Actions"].map((h) => (
-                                        <th key={h} className="px-6 py-3 text-left text-xs font-semibold text-white/30 uppercase tracking-wider">{h}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/[0.04]">
-                                {links.map((link) => (
-                                    <tr key={link.id} className="hover:bg-white/[0.02] transition-colors">
-                                        <td className="px-6 py-4 font-mono text-xs text-white/40">{link.token.substring(0, 12)}...</td>
-                                        <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${link.status === "used"
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm min-w-[600px]">
+                                <thead>
+                                    <tr className="border-b border-white/[0.06]">
+                                        {["Token", "Status", "Created", "Report", "Actions"].map((h, i) => (
+                                            <th key={h} className={`px-4 sm:px-6 py-3 text-left text-xs font-semibold text-white/30 uppercase tracking-wider ${(i === 2 || i === 3) ? 'hidden sm:table-cell' : ''}`}>{h}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/[0.04]">
+                                    {links.map((link) => (
+                                        <tr key={link.id} className="hover:bg-white/[0.02] transition-colors">
+                                            <td className="px-4 sm:px-6 py-4 font-mono text-xs text-white/40">{link.token.substring(0, 12)}...</td>
+                                            <td className="px-4 sm:px-6 py-4">
+                                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${link.status === "used"
                                                     ? "bg-primary/10 text-primary border border-primary/20"
                                                     : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                                                }`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full ${link.status === "used" ? "bg-primary" : "bg-amber-400"}`} />
-                                                {link.status === "used" ? "Uploaded" : "Pending"}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 text-white/35 text-xs">{new Date(link.createdAt).toLocaleDateString()}</td>
-                                        <td className="px-6 py-4 text-white/50">
-                                            {link.report ? (
-                                                <div className="space-y-1">
-                                                    <p className="font-medium text-white/70 truncate max-w-[160px] text-xs">{link.report.fileName}</p>
-                                                    {link.report.ipfsCid && (
-                                                        <a href={link.report.ipfsUrl ?? "#"} target="_blank" rel="noopener noreferrer"
-                                                            className="text-xs text-primary/70 hover:text-primary font-mono underline underline-offset-2 transition-colors">
-                                                            {link.report.ipfsCid.substring(0, 20)}...
-                                                        </a>
+                                                    }`}>
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${link.status === "used" ? "bg-primary" : "bg-amber-400"}`} />
+                                                    {link.status === "used" ? "Uploaded" : "Pending"}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 sm:px-6 py-4 text-white/35 text-xs hidden sm:table-cell">{new Date(link.createdAt).toLocaleDateString()}</td>
+                                            <td className="px-4 sm:px-6 py-4 text-white/50 hidden sm:table-cell">
+                                                {link.report ? (
+                                                    <div className="space-y-1">
+                                                        <p className="font-medium text-white/70 truncate max-w-[160px] text-xs">{link.report.fileName}</p>
+                                                        {link.report.ipfsCid && (
+                                                            <a href={link.report.ipfsUrl ?? "#"} target="_blank" rel="noopener noreferrer"
+                                                                className="text-xs text-primary/70 hover:text-primary font-mono underline underline-offset-2 transition-colors">
+                                                                {link.report.ipfsCid.substring(0, 20)}...
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                ) : <span className="text-white/20">—</span>}
+                                            </td>
+                                            <td className="px-4 sm:px-6 py-4">
+                                                <div className="flex items-center gap-2">
+                                                    {link.status === "pending" && (
+                                                        <button onClick={() => copyToClipboard(link.uploadUrl)}
+                                                            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-white/[0.10] text-white/50 hover:text-white hover:border-white/20 transition-all">
+                                                            <Copy className="w-3 h-3" /> Copy Link
+                                                        </button>
+                                                    )}
+                                                    {link.status === "used" && (
+                                                        <button onClick={() => router.push(`/upload/${link.token}`)}
+                                                            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/25 text-primary hover:bg-primary/20 transition-all">
+                                                            <BarChart3 className="w-3 h-3" /> View Report
+                                                        </button>
                                                     )}
                                                 </div>
-                                            ) : <span className="text-white/20">—</span>}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2">
-                                                {link.status === "pending" && (
-                                                    <button onClick={() => copyToClipboard(link.uploadUrl)}
-                                                        className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-white/[0.10] text-white/50 hover:text-white hover:border-white/20 transition-all">
-                                                        <Copy className="w-3 h-3" /> Copy Link
-                                                    </button>
-                                                )}
-                                                {link.status === "used" && (
-                                                    <button onClick={() => router.push(`/upload/${link.token}`)}
-                                                        className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/25 text-primary hover:bg-primary/20 transition-all">
-                                                        <BarChart3 className="w-3 h-3" /> View Report
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     )}
                 </div>
             </div>

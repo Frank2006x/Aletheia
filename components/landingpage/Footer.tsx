@@ -5,21 +5,21 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="w-full relative bg-background border-t border-border pt-20 pb-10">
+    <footer className="w-full relative bg-background border-t border-border pt-12 sm:pt-20 pb-8 sm:pb-10">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 mb-10 sm:mb-16">
           {/* Brand Column */}
-          <div className="col-span-1 md:col-span-1">
+          <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2.5 mb-6 group">
-             
+
               <span className="text-foreground font-bold text-xl tracking-tight">Aletheia</span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6 max-w-xs">
               Building the verifiable foundation for the next generation of artificial intelligence. Auditable, immutable, and transparent.
             </p>
             <div className="flex items-center gap-4">
-               <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-               <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Global Network Active</span>
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+              <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Global Network Active</span>
             </div>
           </div>
 

@@ -81,11 +81,11 @@ export default function SupplierDashboardPage() {
                 <RoleRegistrar session={session} router={router} />
             </Suspense>
             {/* Header */}
-            <div className="sticky top-0 z-10 bg-black/70 backdrop-blur-xl border-b border-white/[0.08] px-6 py-4 flex items-center justify-between">
+            <div className="sticky top-0 z-10 bg-black/70 backdrop-blur-xl border-b border-white/[0.08] px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
                 <div>
                     <div className="flex items-center gap-2">
-                        <BarChart3 className="w-5 h-5 text-indigo-400" />
-                        <h1 className="text-xl font-bold text-white tracking-tight">Supplier Dashboard</h1>
+                        <BarChart3 className="w-5 h-5 text-indigo-400 hidden sm:block" />
+                        <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">Supplier Dashboard</h1>
                     </div>
                     <p className="text-xs text-white/35 mt-0.5 pl-7">{session.user.email}</p>
                 </div>
@@ -98,17 +98,17 @@ export default function SupplierDashboardPage() {
             </div>
 
             {/* Content */}
-            <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-4 sm:space-y-6">
                 {/* Stats */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                     {[
                         { label: "Assigned Links", value: links.length, icon: <Link2 className="w-4 h-4 text-white/40" /> },
                         { label: "Pending Upload", value: pending, icon: <Link2 className="w-4 h-4 text-amber-400/70" /> },
                         { label: "Reports Submitted", value: submitted, icon: <FileText className="w-4 h-4 text-indigo-400/70" /> },
                     ].map((stat) => (
-                        <div key={stat.label} className="bg-[#0a0a0a] border border-white/[0.08] rounded-xl p-5 flex flex-col items-center gap-1">
+                        <div key={stat.label} className="bg-[#0a0a0a] border border-white/[0.08] rounded-xl p-4 sm:p-5 flex flex-row sm:flex-col items-center sm:items-center gap-3 sm:gap-1">
                             {stat.icon}
-                            <p className="text-3xl font-bold text-white tabular-nums">{stat.value}</p>
+                            <p className="text-2xl sm:text-3xl font-bold text-white tabular-nums">{stat.value}</p>
                             <p className="text-xs text-white/35 uppercase tracking-wider">{stat.label}</p>
                         </div>
                     ))}
@@ -132,52 +132,54 @@ export default function SupplierDashboardPage() {
                             <p className="text-white/20 text-xs">Upload to a link shared by your investor to get started.</p>
                         </div>
                     ) : (
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-white/[0.06]">
-                                    {["File", "Status", "Uploaded", "IPFS", "View"].map((h) => (
-                                        <th key={h} className="px-6 py-3 text-left text-xs font-semibold text-white/30 uppercase tracking-wider">{h}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/[0.04]">
-                                {links.map((link) => (
-                                    <tr key={link.id} className="hover:bg-white/[0.02] transition-colors">
-                                        <td className="px-6 py-4 text-white/60 text-xs font-medium max-w-[160px] truncate">
-                                            {link.report?.fileName ?? <span className="text-white/20 italic">Not uploaded</span>}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${link.status === "used"
-                                                ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
-                                                : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                                                }`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full ${link.status === "used" ? "bg-indigo-400" : "bg-amber-400"}`} />
-                                                {link.status === "used" ? "Submitted" : "Pending"}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 text-white/35 text-xs">
-                                            {link.report ? new Date(link.report.uploadedAt).toLocaleDateString() : "—"}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            {link.report?.ipfsCid ? (
-                                                <a href={link.report.ipfsUrl ?? "#"} target="_blank" rel="noopener noreferrer"
-                                                    className="text-xs text-indigo-400/70 hover:text-indigo-400 font-mono underline underline-offset-2 transition-colors">
-                                                    {link.report.ipfsCid.substring(0, 16)}...
-                                                </a>
-                                            ) : <span className="text-white/20">—</span>}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            {link.status === "used" && (
-                                                <button onClick={() => router.push(`/upload/${link.token}`)}
-                                                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/25 text-indigo-400 hover:bg-indigo-500/20 transition-all">
-                                                    <BarChart3 className="w-3 h-3" /> View Report
-                                                </button>
-                                            )}
-                                        </td>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm min-w-[600px]">
+                                <thead>
+                                    <tr className="border-b border-white/[0.06]">
+                                        {["File", "Status", "Uploaded", "IPFS", "View"].map((h, i) => (
+                                            <th key={h} className={`px-4 sm:px-6 py-3 text-left text-xs font-semibold text-white/30 uppercase tracking-wider ${(i === 2 || i === 3) ? 'hidden sm:table-cell' : ''}`}>{h}</th>
+                                        ))}
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody className="divide-y divide-white/[0.04]">
+                                    {links.map((link) => (
+                                        <tr key={link.id} className="hover:bg-white/[0.02] transition-colors">
+                                            <td className="px-4 sm:px-6 py-4 text-white/60 text-xs font-medium max-w-[160px] truncate">
+                                                {link.report?.fileName ?? <span className="text-white/20 italic">Not uploaded</span>}
+                                            </td>
+                                            <td className="px-4 sm:px-6 py-4">
+                                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${link.status === "used"
+                                                    ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+                                                    : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                                    }`}>
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${link.status === "used" ? "bg-indigo-400" : "bg-amber-400"}`} />
+                                                    {link.status === "used" ? "Submitted" : "Pending"}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 sm:px-6 py-4 text-white/35 text-xs hidden sm:table-cell">
+                                                {link.report ? new Date(link.report.uploadedAt).toLocaleDateString() : "—"}
+                                            </td>
+                                            <td className="px-4 sm:px-6 py-4 hidden sm:table-cell">
+                                                {link.report?.ipfsCid ? (
+                                                    <a href={link.report.ipfsUrl ?? "#"} target="_blank" rel="noopener noreferrer"
+                                                        className="text-xs text-indigo-400/70 hover:text-indigo-400 font-mono underline underline-offset-2 transition-colors">
+                                                        {link.report.ipfsCid.substring(0, 16)}...
+                                                    </a>
+                                                ) : <span className="text-white/20">—</span>}
+                                            </td>
+                                            <td className="px-4 sm:px-6 py-4">
+                                                {link.status === "used" && (
+                                                    <button onClick={() => router.push(`/upload/${link.token}`)}
+                                                        className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/25 text-indigo-400 hover:bg-indigo-500/20 transition-all">
+                                                        <BarChart3 className="w-3 h-3" /> View Report
+                                                    </button>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     )}
                 </div>
             </div>

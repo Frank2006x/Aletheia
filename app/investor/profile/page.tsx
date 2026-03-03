@@ -85,7 +85,7 @@ export default function InvestorProfilePage() {
             </div>
 
             {/* Topbar */}
-            <div className="sticky top-0 z-10 bg-black/60 backdrop-blur-xl border-b border-white/[0.06] px-8 py-4 flex items-center justify-between">
+            <div className="sticky top-0 z-10 bg-black/60 backdrop-blur-xl border-b border-white/[0.06] px-4 sm:px-8 py-3 sm:py-4 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm">
                     <TrendingUp className="w-4 h-4 text-primary" />
                     <span className="font-semibold text-white/80">Aletheia</span>
@@ -102,7 +102,7 @@ export default function InvestorProfilePage() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
-                className="max-w-5xl mx-auto px-8 py-10 grid grid-cols-12 gap-6"
+                className="max-w-5xl mx-auto px-4 sm:px-8 py-6 sm:py-10 grid grid-cols-12 gap-4 sm:gap-6"
             >
                 {/* Left — Identity */}
                 <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">

@@ -325,7 +325,7 @@ export default function HowItWorks() {
         <section
             id="how-it-works"
             ref={sectionRef}
-            className="relative w-full py-28 lg:py-40 bg-black overflow-hidden"
+            className="relative w-full py-16 sm:py-28 lg:py-40 bg-black overflow-hidden"
         >
             {/* ── Blockchain canvas background ── */}
             <BlockchainCanvas />
@@ -339,11 +339,11 @@ export default function HowItWorks() {
 
             <div className="container px-4 md:px-6 mx-auto relative z-10 max-w-5xl">
                 {/* Header */}
-                <div className="mb-20 flex flex-col items-center text-center">
+                <div className="mb-12 sm:mb-20 flex flex-col items-center text-center">
                     <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/60 backdrop-blur-sm px-4 py-1 text-xs text-primary mb-6 uppercase tracking-widest font-medium">
                         Workflow
                     </div>
-                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-4 sm:mb-6">
                         The Timeline of{" "}
                         <span className="text-primary">Trust</span>.
                     </h2>
@@ -379,7 +379,7 @@ export default function HowItWorks() {
                                         }`}
                                 >
                                     <div
-                                        className={`inline-flex flex-col bg-black/60 border border-white/[0.08] backdrop-blur-xl rounded-2xl p-6 md:p-8 w-full transition-all duration-500 group-hover:bg-black/80 group-hover:border-primary/25 ${index % 2 === 0 ? "sm:items-end" : "sm:items-start"
+                                        className={`inline-flex flex-col bg-black/60 border border-white/[0.08] backdrop-blur-xl rounded-2xl p-5 sm:p-6 md:p-8 w-full transition-all duration-500 group-hover:bg-black/80 group-hover:border-primary/25 ${index % 2 === 0 ? "sm:items-end" : "sm:items-start"
                                             }`}
                                     >
                                         <div className="text-[10px] font-bold uppercase tracking-widest text-primary/60 mb-2">

@@ -144,11 +144,10 @@ export default function ChatInterface({
               className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[85%] rounded-2xl px-4 py-3 ${
-                  message.role === "user"
+                className={`max-w-[85%] rounded-2xl px-4 py-3 ${message.role === "user"
                     ? "bg-primary/20 border border-primary/30 text-white rounded-br-sm"
                     : "bg-white/[0.05] border border-white/[0.08] text-white/85 rounded-bl-sm"
-                }`}
+                  }`}
               >
                 <p className="whitespace-pre-wrap text-sm leading-relaxed">
                   {message.content}
@@ -186,7 +185,7 @@ export default function ChatInterface({
           <div ref={messagesEndRef} />
         </CardContent>
 
-        <div className="border-t border-white/[0.08] p-3 bg-black/30 flex-shrink-0">
+        <div className="border-t border-white/[0.08] p-2 sm:p-3 bg-black/30 flex-shrink-0">
           <div className="flex space-x-2">
             <Input
               value={input}
@@ -199,7 +198,7 @@ export default function ChatInterface({
             <Button
               onClick={handleSend}
               disabled={!input.trim() || loading}
-              className="bg-primary hover:bg-primary/90 text-black font-semibold rounded-xl px-4 disabled:opacity-40 transition-all"
+              className="bg-primary hover:bg-primary/90 text-black font-semibold rounded-xl px-4 min-h-[44px] disabled:opacity-40 transition-all"
             >
               {loading ? (
                 <Sparkles className="w-4 h-4 animate-pulse" />

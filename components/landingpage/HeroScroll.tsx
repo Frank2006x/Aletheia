@@ -58,8 +58,8 @@ const TEXT_SLIDES: TextSlide[] = [
     {
         id: "cta",
         lines: [
-            <span key="cta-title" className="relative group inline-block mb-8">
-                <span className="relative z-10 text-7xl md:text-[8rem] lg:text-[10rem] font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white via-white/90 to-white/20 drop-shadow-2xl">
+            <span key="cta-title" className="relative group inline-block mb-4 sm:mb-8">
+                <span className="relative z-10 text-5xl sm:text-7xl md:text-[8rem] lg:text-[10rem] font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white via-white/90 to-white/20 drop-shadow-2xl">
                     Aletheia
                 </span>
             </span>,
@@ -165,13 +165,13 @@ function TextOverlay({
 
     const positionClasses = {
         center: "items-center justify-center text-center",
-        left: "items-start justify-center text-left pl-8 md:pl-16 lg:pl-24",
-        right: "items-end justify-center text-right pr-8 md:pr-16 lg:pr-24",
+        left: "items-start justify-center text-left pl-4 sm:pl-8 md:pl-16 lg:pl-24",
+        right: "items-end justify-center text-right pr-4 sm:pr-8 md:pr-16 lg:pr-24",
     };
 
     return (
         <motion.div
-            className={`absolute inset-0 z-20 flex flex-col ${positionClasses[slide.position]} pointer-events-none px-6`}
+            className={`absolute inset-0 z-20 flex flex-col ${positionClasses[slide.position]} pointer-events-none px-4 sm:px-6`}
             style={{ opacity, filter: filterBlur }}
         >
             {/* Background Gradient Overlay to improve text readability */}
@@ -186,18 +186,18 @@ function TextOverlay({
                 }}
             />
 
-            <motion.div className="max-w-3xl relative z-10" style={{ y }}>
+            <motion.div className="max-w-[85vw] sm:max-w-3xl relative z-10" style={{ y }}>
                 {slide.lines.map((line, i) => (
                     <motion.div
                         key={i}
                         className={
                             slide.isCTA
-                                ? "text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-tight"
+                                ? "text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-tight"
                                 : slide.id === "title"
                                     ? "mb-4"
                                     : slide.position === "center" && slide.id === "intro"
-                                        ? "text-3xl md:text-5xl lg:text-6xl font-semibold text-white/95 tracking-tight leading-snug mb-3 drop-shadow-lg"
-                                        : "text-3xl md:text-5xl lg:text-6xl font-semibold text-white/95 tracking-tight leading-tight drop-shadow-lg"
+                                        ? "text-xl sm:text-3xl md:text-5xl lg:text-6xl font-semibold text-white/95 tracking-tight leading-snug mb-3 drop-shadow-lg"
+                                        : "text-xl sm:text-3xl md:text-5xl lg:text-6xl font-semibold text-white/95 tracking-tight leading-tight drop-shadow-lg"
                         }
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -211,8 +211,8 @@ function TextOverlay({
                     </motion.div>
                 ))}
                 {slide.isCTA && (
-                    <motion.div className="mt-8 pointer-events-auto" style={{ opacity }}>
-                        <Link href="/sign-in" className="hero-cta-button group relative inline-flex items-center gap-2 px-8 py-4 rounded-full text-sm font-semibold text-white bg-white/10 backdrop-blur-md border border-white/[0.08] hover:bg-white/15 hover:border-white/20 transition-all duration-500 ease-out">
+                    <motion.div className="mt-4 sm:mt-8 pointer-events-auto" style={{ opacity }}>
+                        <Link href="/sign-in" className="hero-cta-button group relative inline-flex items-center gap-2 px-6 py-3 sm:px-8 sm:py-4 rounded-full text-xs sm:text-sm font-semibold text-white bg-white/10 backdrop-blur-md border border-white/[0.08] hover:bg-white/15 hover:border-white/20 transition-all duration-500 ease-out">
                             <span className="relative z-10">Get Started</span>
                             <svg
                                 className="relative z-10 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
@@ -432,7 +432,7 @@ export default function HeroScroll() {
 
             <section
                 ref={containerRef}
-                className="relative h-[400vh] bg-[#050505]"
+                className="relative h-[250vh] sm:h-[400vh] bg-[#050505]"
                 id="hero"
             >
                 {/* Sticky viewport */}
