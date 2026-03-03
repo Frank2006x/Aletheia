@@ -7,25 +7,12 @@ import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     LogOut, Mail, ShieldCheck, CalendarDays, Chrome,
-    Loader2, TrendingUp, BarChart3, ArrowRight, Activity, Lock,
+    Loader2, TrendingUp, BarChart3, ArrowRight,
 } from "lucide-react";
-
-function GridBackground() {
-    return (
-        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl">
-            <svg className="absolute inset-0 w-full h-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <pattern id="inv-grid" width="32" height="32" patternUnits="userSpaceOnUse">
-                        <path d="M 32 0 L 0 0 0 32" fill="none" stroke="white" strokeWidth="0.5" />
-                    </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#inv-grid)" />
-            </svg>
-        </div>
-    );
-}
 
 export default function InvestorProfilePage() {
     const { data: session, isPending } = useSession();
@@ -33,12 +20,10 @@ export default function InvestorProfilePage() {
     const searchParams = useSearchParams();
     const [registered, setRegistered] = useState(false);
 
-    // Register investor role in DB on first visit
     useEffect(() => {
         if (!session) return;
         const setup = async () => {
-            const paramRole = searchParams.get("role");
-            if (paramRole === "investor") {
+            if (searchParams.get("role") === "investor") {
                 await fetch("/api/role", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -76,33 +61,45 @@ export default function InvestorProfilePage() {
     });
 
     return (
-        <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6">
+        <div className="min-h-screen bg-[#050505]">
+            {/* Ambient glow */}
             <div className="pointer-events-none fixed inset-0 overflow-hidden">
-                <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-[0.06]"
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] opacity-[0.05]"
                     style={{ background: "radial-gradient(ellipse, oklch(72.786% 0.24093 143.274) 0%, transparent 70%)", filter: "blur(80px)" }} />
             </div>
 
-            <motion.div
-                initial={{ opacity: 0, y: 28 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, ease: "easeOut" }}
-                className="relative z-10 w-full max-w-md"
-            >
-                <div className="relative bg-[#0c0c0c] border border-white/[0.08] rounded-3xl overflow-hidden mb-3 shadow-2xl">
-                    <GridBackground />
-                    {/* Green top accent */}
-                    <div className="h-1.5 w-full bg-gradient-to-r from-primary/60 via-primary/20 to-transparent" />
+            {/* Topbar */}
+            <div className="sticky top-0 z-10 bg-black/60 backdrop-blur-xl border-b border-white/[0.06] px-8 py-4 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm">
+                    <TrendingUp className="w-4 h-4 text-primary" />
+                    <span className="font-semibold text-white/80">Aletheia</span>
+                    <span className="text-white/20">/</span>
+                    <span className="text-white/40">Investor Profile</span>
+                </div>
+                <Button variant="ghost" size="sm" onClick={handleSignOut}
+                    className="text-white/30 hover:text-red-400 hover:bg-red-500/10 gap-1.5">
+                    <LogOut className="w-3.5 h-3.5" /> Sign out
+                </Button>
+            </div>
 
-                    <div className="relative px-8 pt-8 pb-7">
-                        {/* Avatar */}
-                        <div className="flex flex-col items-center text-center mb-7">
-                            <div className="relative mb-4">
-                                <div className="absolute inset-[-3px] rounded-2xl"
-                                    style={{ boxShadow: "0 0 20px 4px oklch(72.786% 0.24093 143.274 / 0.25)" }} />
-                                <Avatar className="w-20 h-20 rounded-2xl ring-2 ring-white/[0.10] relative">
+            <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="max-w-5xl mx-auto px-8 py-10 grid grid-cols-12 gap-6"
+            >
+                {/* Left — Identity */}
+                <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
+                    <Card className="bg-[#0c0c0c] border-white/[0.07] rounded-2xl overflow-hidden shadow-xl p-0 gap-0">
+                        <div className="h-1 bg-gradient-to-r from-primary/70 via-primary/30 to-transparent" />
+                        <CardContent className="pt-8 pb-7 flex flex-col items-center text-center px-7">
+                            <div className="relative mb-5">
+                                <div className="absolute inset-[-4px] rounded-2xl"
+                                    style={{ boxShadow: "0 0 22px 5px oklch(72.786% 0.24093 143.274 / 0.18)" }} />
+                                <Avatar className="w-24 h-24 rounded-2xl ring-2 ring-white/[0.08] relative">
                                     <AvatarImage src={user.image ?? undefined} alt={user.name ?? "User"} className="rounded-2xl object-cover" />
-                                    <AvatarFallback className="rounded-2xl text-2xl font-bold"
-                                        style={{ background: "oklch(72.786% 0.24093 143.274 / 0.12)", color: "oklch(72.786% 0.24093 143.274)" }}>
+                                    <AvatarFallback className="rounded-2xl text-3xl font-bold"
+                                        style={{ background: "oklch(72.786% 0.24093 143.274 / 0.1)", color: "oklch(72.786% 0.24093 143.274)" }}>
                                         {initials}
                                     </AvatarFallback>
                                 </Avatar>
@@ -112,72 +109,50 @@ export default function InvestorProfilePage() {
                                     </span>
                                 )}
                             </div>
-                            <h1 className="text-2xl font-bold text-white tracking-tight">{user.name ?? "User"}</h1>
-                            <p className="text-sm text-white/35 mt-1">{user.email}</p>
-                            <Badge className="mt-3 flex items-center gap-1.5 px-3 py-1 border bg-primary/10 border-primary/25 text-primary text-xs font-semibold">
-                                <TrendingUp className="w-3 h-3" />
-                                Investor
-                                <Separator orientation="vertical" className="h-3 bg-current opacity-20 mx-0.5" />
-                                <span className="opacity-50 font-normal">ESG Portfolio Manager</span>
+                            <h2 className="text-xl font-bold text-white tracking-tight">{user.name ?? "User"}</h2>
+                            <p className="text-xs text-white/35 mt-1 break-all">{user.email}</p>
+                            <Badge className="mt-4 items-center gap-1.5 px-3 py-1 border bg-primary/10 border-primary/25 text-primary text-xs font-semibold">
+                                <TrendingUp className="w-3 h-3" /> Investor
                             </Badge>
-                        </div>
+                        </CardContent>
+                    </Card>
 
-                        {/* Stat chips */}
-                        <div className="grid grid-cols-3 gap-2 mb-7">
-                            {[
-                                { icon: Activity, label: "Status", value: "Active" },
-                                { icon: Lock, label: "Auth", value: "Google" },
-                                { icon: CalendarDays, label: "Since", value: joinedDate.split(",")[1]?.trim() ?? joinedDate },
-                            ].map(({ icon: Icon, label, value }) => (
-                                <div key={label} className="flex flex-col items-center gap-1 bg-white/[0.03] border border-white/[0.06] rounded-xl p-3">
-                                    <Icon className="w-3.5 h-3.5 text-white/25 mb-0.5" />
-                                    <p className="text-[10px] text-white/25 uppercase tracking-wider">{label}</p>
-                                    <p className="text-xs font-semibold text-white/70 text-center leading-tight">{value}</p>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Info rows */}
-                        <div className="space-y-px rounded-xl overflow-hidden bg-white/[0.03] border border-white/[0.06] mb-6">
-                            {[
-                                { icon: Mail, label: "Email address", value: user.email },
-                                { icon: Chrome, label: "Sign-in provider", value: "Google OAuth 2.0" },
-                            ].map(({ icon: Icon, label, value }, i, arr) => (
-                                <div key={label}>
-                                    <div className="flex items-center gap-3 px-4 py-3">
-                                        <Icon className="w-3.5 h-3.5 text-white/25 flex-shrink-0" />
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-[10px] text-white/25 uppercase tracking-wider">{label}</p>
-                                            <p className="text-sm text-white/65 font-medium truncate">{value}</p>
-                                        </div>
-                                    </div>
-                                    {i < arr.length - 1 && <div className="h-px bg-white/[0.04] mx-4" />}
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Dashboard CTA */}
-                        <button
-                            onClick={() => router.push("/investor/dashboard")}
-                            className="w-full flex items-center justify-between px-5 py-3.5 bg-primary hover:bg-primary/90 text-black rounded-xl font-semibold text-sm transition-all group"
-                        >
-                            <div className="flex items-center gap-2.5">
-                                <BarChart3 className="w-4 h-4" />
-                                Open Investor Dashboard
-                            </div>
-                            <ArrowRight className="w-4 h-4 opacity-60 group-hover:translate-x-0.5 transition-transform" />
-                        </button>
-                    </div>
+                    <Button onClick={() => router.push("/investor/dashboard")}
+                        className="w-full flex items-center justify-between bg-primary hover:bg-primary/90 text-black font-semibold rounded-xl px-5 h-11 group">
+                        <div className="flex items-center gap-2"><BarChart3 className="w-4 h-4" /> Open Dashboard</div>
+                        <ArrowRight className="w-4 h-4 opacity-60 group-hover:translate-x-0.5 transition-transform" />
+                    </Button>
                 </div>
 
-                {/* Sign out */}
-                <button
-                    onClick={handleSignOut}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 text-xs text-white/20 hover:text-red-400 border border-white/[0.05] hover:border-red-500/20 rounded-2xl transition-all"
-                >
-                    <LogOut className="w-3.5 h-3.5" />
-                    Sign out of Aletheia
-                </button>
+                {/* Right — Details */}
+                <div className="col-span-12 lg:col-span-8">
+                    <Card className="bg-[#0c0c0c] border-white/[0.07] rounded-2xl shadow-xl gap-0 p-0">
+                        <CardHeader className="px-7 pt-6 pb-4">
+                            <CardTitle className="text-sm font-semibold text-white/60 uppercase tracking-widest">Account Details</CardTitle>
+                        </CardHeader>
+                        <Separator className="bg-white/[0.05]" />
+                        <CardContent className="px-7 py-2">
+                            {[
+                                { icon: Mail, label: "Email", value: user.email },
+                                { icon: Chrome, label: "Sign-in provider", value: "Google OAuth 2.0" },
+                                { icon: CalendarDays, label: "Member since", value: joinedDate },
+                            ].map(({ icon: Icon, label, value }, i, arr) => (
+                                <div key={label}>
+                                    <div className="flex items-center gap-4 py-4">
+                                        <div className="w-8 h-8 rounded-lg bg-white/[0.03] border border-white/[0.06] flex items-center justify-center flex-shrink-0">
+                                            <Icon className="w-3.5 h-3.5 text-white/30" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[10px] text-white/25 uppercase tracking-widest">{label}</p>
+                                            <p className="text-sm text-white/70 font-medium mt-0.5 truncate">{value}</p>
+                                        </div>
+                                    </div>
+                                    {i < arr.length - 1 && <Separator className="bg-white/[0.04]" />}
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                </div>
             </motion.div>
         </div>
     );

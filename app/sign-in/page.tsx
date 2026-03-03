@@ -20,8 +20,8 @@ export default function SignInPage() {
         await signIn.social({
             provider: "google",
             callbackURL: role === "investor"
-                ? `/investor/profile?role=investor`
-                : `/supplier/profile?role=supplier`,
+                ? `/investor/dashboard?role=investor`
+                : `/supplier/dashboard?role=supplier`,
         });
         setLoading(false);
     };

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
     FileText, Link2, BarChart3, Loader2, ChevronLeft,
 } from "lucide-react";
@@ -32,6 +32,19 @@ export default function SupplierDashboardPage() {
     useEffect(() => {
         if (!isPending && !session) router.push("/sign-in");
     }, [session, isPending, router]);
+
+    // Register role on first login
+    const searchParams = useSearchParams();
+    useEffect(() => {
+        if (!session) return;
+        if (searchParams.get("role") === "supplier") {
+            fetch("/api/role", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ role: "supplier" }),
+            }).then(() => router.replace("/supplier/dashboard", { scroll: false }));
+        }
+    }, [session, searchParams, router]);
 
     useEffect(() => {
         if (session) fetchLinks();
