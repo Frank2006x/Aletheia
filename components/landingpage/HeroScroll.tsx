@@ -16,6 +16,7 @@ import {
     MotionValue,
 } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const FRAME_PREFIX = "/sequence/ezgif-frame-";
@@ -70,6 +71,54 @@ const TEXT_SLIDES: TextSlide[] = [
         isCTA: true,
     },
 ];
+
+// ─── Mobile Alternative ──────────────────────────────────────────────────────
+function MobileHero() {
+    return (
+        <section
+            id="hero"
+            className="relative w-full min-h-[80vh] bg-[#050505] overflow-hidden flex items-center"
+        >
+            <div className="absolute inset-0">
+                <Image
+                    src="/background.jpeg"
+                    alt="Aletheia trusted data background"
+                    fill
+                    priority
+                    className="object-cover opacity-70"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-[#050505]/80 to-[#050505]" />
+            </div>
+
+            <div className="relative z-10 max-w-2xl mx-auto px-6 py-16 flex flex-col items-center text-center gap-5">
+                <p className="text-primary text-xs font-semibold tracking-[0.2em] uppercase">
+                    Verifiable by design
+                </p>
+                <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight">
+                    Transparent. Auditable. Immutable.
+                </h1>
+                <p className="text-white/70 text-base leading-relaxed">
+                    Aletheia keeps every supplier submission consistent and trusted, pairing AI analysis
+                    with on-chain proofs so investors and suppliers always see the same truth.
+                </p>
+                <div className="flex flex-col sm:flex-row items-center gap-3">
+                    <Link
+                        href="/sign-in"
+                        className="inline-flex items-center justify-center px-5 py-3 rounded-full text-sm font-semibold bg-white text-black hover:bg-white/90 transition-all duration-300 shadow-[0_0_18px_rgba(255,255,255,0.25)] w-full sm:w-auto"
+                    >
+                        Get started
+                    </Link>
+                    <Link
+                        href="#features"
+                        className="inline-flex items-center justify-center px-5 py-3 rounded-full text-sm font-semibold border border-white/15 text-white bg-white/5 hover:bg-white/10 transition-all duration-300 w-full sm:w-auto"
+                    >
+                        See features
+                    </Link>
+                </div>
+            </div>
+        </section>
+    );
+}
 
 // ─── Easing ──────────────────────────────────────────────────────────────────
 const EASE_CINEMATIC: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -248,7 +297,17 @@ export default function HeroScroll() {
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [loadProgress, setLoadProgress] = useState(0);
+    const [isMobileView, setIsMobileView] = useState(
+        () => (typeof window !== "undefined" ? window.innerWidth < 768 : false)
+    );
     const prefersReducedMotion = useReducedMotion();
+
+    useEffect(() => {
+        const handleViewportChange = () => setIsMobileView(window.innerWidth < 768);
+        handleViewportChange();
+        window.addEventListener("resize", handleViewportChange);
+        return () => window.removeEventListener("resize", handleViewportChange);
+    }, []);
 
     // useScroll bound to container — works because container is always rendered
     const { scrollYProgress } = useScroll({
@@ -349,12 +408,14 @@ export default function HeroScroll() {
 
     // ─── Track scroll → frame mapping ───────────────────────────────────────
     useMotionValueEvent(scrollYProgress, "change", (v) => {
-        if (prefersReducedMotion) return;
+        if (prefersReducedMotion || isMobileView) return;
         currentFrameRef.current = v * (TOTAL_FRAMES - 1);
     });
 
     // ─── Preload all frames ─────────────────────────────────────────────────
     useEffect(() => {
+        if (isMobileView) return;
+
         let loadedCount = 0;
         const images: HTMLImageElement[] = new Array(TOTAL_FRAMES);
 
@@ -391,11 +452,11 @@ export default function HeroScroll() {
         }
 
         preloadAll();
-    }, [frameUrls]);
+    }, [frameUrls, isMobileView]);
 
     // ─── Start animation loop after loaded ──────────────────────────────────
     useEffect(() => {
-        if (!isLoaded) return;
+        if (!isLoaded || isMobileView) return;
 
         // Draw first frame immediately
         if (prefersReducedMotion) {
@@ -409,11 +470,11 @@ export default function HeroScroll() {
         return () => {
             if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
         };
-    }, [isLoaded, animate, drawFrame, prefersReducedMotion]);
+    }, [isLoaded, animate, drawFrame, prefersReducedMotion, isMobileView]);
 
     // ─── Handle resize ──────────────────────────────────────────────────────
     useEffect(() => {
-        if (!isLoaded) return;
+        if (!isLoaded || isMobileView) return;
 
         const handleResize = () => {
             const frameIndex = Math.round(animatedFrameRef.current);
@@ -422,9 +483,13 @@ export default function HeroScroll() {
 
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
-    }, [isLoaded, drawFrame]);
+    }, [isLoaded, drawFrame, isMobileView]);
 
     // ─── Render ──────────────────────────────────────────────────────────────
+    if (isMobileView) {
+        return <MobileHero />;
+    }
+
     return (
         <>
             {/* Loading overlay */}
